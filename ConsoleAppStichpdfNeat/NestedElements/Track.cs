@@ -8,17 +8,34 @@ namespace ConsoleAppStichpdfNeat.NestedElements
 {
     public class Track
     {
-        List<Race<Horse>> raceList { get; set; }
+        public List<Race<Horse>> raceList { get; set; }
 
         public Track()
         {
             raceList = new List<Race<Horse>>();
         }
 
-        public Track addTrack(Race<Horse> r)
+        public Track addRace(Race<Horse> r)
         {
             this.raceList.Add(r);
             return this;
+        }
+
+        public override string ToString()
+        {
+            string beginStr = "A Track>>>>>>>>>>>: ";
+            string raceListStr = " raceList: \n";
+            raceListStr = raceListStr + raceDetail();
+            //raceList.ForEach(race => raceListStr = raceListStr + race.ToString() + "\n");
+            return String.Format("Begin raceList: {0} {1} {2} ", beginStr, raceListStr, "\n" );
+
+        }
+
+        private string raceDetail()
+        {
+            string raceInitStr = "";
+            raceList.ForEach( (Race<Horse> r) =>{ raceInitStr += r; });
+            return raceInitStr;
         }
     }
 }

@@ -8,17 +8,36 @@ namespace ConsoleAppStichpdfNeat.NestedElements
 {
     public class Header
     {
-        public int depth { get; set; }
+        internal double height { get; set; }
+        internal double newHeight { get; set; }
+        internal int spCount { get; set; }
+
+        internal string imgFileName { get; set; }
+        internal string imgPath { get; set; }
+
+        internal short racenumber { get; set; }
+        internal string trackName { get; set; }
+
+        internal double topPostion { get; set; }
+        internal double bottomPosition { get; set; }
 
 
-        public Header(int depth)
+
+        public Header(int ht, string imgFileName, string imgPath, short raceNumber, string trackName)
         {
-            this.depth = depth;
+            this.height = ht;
+            newHeight = ht;
+            this.imgFileName = imgFileName;
+            this.imgPath = imgPath;
+            this.racenumber = raceNumber;
+            this.trackName = trackName;
+
         }
 
         public override string ToString()
         {
-            return "{Header: depth=" + depth + "}";
+            return "{Header: height=" + height + " newHeight=" + newHeight + " spCount=" + spCount + " imgFileName=" + imgFileName + " imgPath=" + imgPath + " racenumber=" + racenumber + "}\n";
         }
+
     }
 }

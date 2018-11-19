@@ -11,11 +11,6 @@ namespace ConsoleAppStichpdfNeat.NestedElements
         public HeaderAndFirstHorse headerFirstHorse { get; set; }
         public List<Horse> secondAndOtherHorseList { get; set; }
 
-        public override string ToString()
-        {
-
-            return String.Format("Race: {0} other={1}", headerFirstHorse.ToString(), secondAndOtherHorseList.ToString());
-        }
 
         public Race()
         {
@@ -33,9 +28,42 @@ namespace ConsoleAppStichpdfNeat.NestedElements
             return this;
         }
 
-        //private String getRest()
-        //{
-        //    String res = (secondAndOtherHorseList) =>
-        //}
-    }
+        
+        public override string ToString()
+        {
+
+            return String.Format("Race: {0} ", getStringOf_Race(this));
+        }
+
+
+        private string getStringOf_Race(Race<Horse> aRace)
+        {
+            Func<List<Horse>, String> xListTostr = consolidate; //powerful delegate
+            string raceHeaderAnd1stHorse = aRace.headerFirstHorse.ToString();
+
+            string secondAndOtherHouse = xListTostr(aRace.secondAndOtherHorseList);
+            return raceHeaderAnd1stHorse + secondAndOtherHouse;
+        }
+
+        private string consolidate<T>(List<T> lstr) { 
+            string restr = "Begin: ";
+
+            lstr.ForEach(b =>
+            {
+                if (b.GetType() == typeof(Horse))
+                {
+                   // Console.WriteLine("Horse type"); //debug
+                    restr += b.ToString() + ", ";
+                }
+                else
+                {
+                    restr += restr + "error";
+                }
+  
+            });
+
+
+            return restr;
+        }
+    } //class ends
 }

@@ -19,7 +19,23 @@ namespace ConsoleAppStichpdfNeat.Config
 
         public static double spacerHeight
         { //inch content height of a pdf page
-            get { return pageHeight / (9 * 12); } //1/12(lowest horse depth)
+            get { return pageHeight / (9 * 12); } //1/12(lowest horse height)
         }
+
+        public static double shrinkMax
+        { 
+            get { return 0.25; } //inch on a page
+        }
+
+        public static double shrinkMin
+        {
+            get { return 0.125; } //inch on a page
+        }
+
+        public static double lastPageMinimumFillout
+        {
+            get { return pageHeight * 0.38; } //inch on a page [more than 1/3 filled up
+        }
+
     }
 }

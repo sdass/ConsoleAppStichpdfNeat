@@ -19,7 +19,7 @@ namespace ConsoleAppStichpdfNeat.NestedElements
         }
         public override string ToString()
         {
-            return "{HeaderAndFirstHorse: " + header.ToString() + firstHorse.ToString() +"} ";
+            return "{HeaderAndFirstHorse: " + header.ToString() + firstHorse.ToString() + "} ";
         }
 
     }

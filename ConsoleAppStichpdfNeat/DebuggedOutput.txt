@@ -1,0 +1,50 @@
+﻿(1) In/Out data structure ouput
+
+program.cs
+            Console.WriteLine("==============!!!!!!!!!!!================!!!!!!!!!!!!=============");
+	    Console.WriteLine("1StitchedFinalPdf=" + pdfData); // 1 track at a time
+            Console.WriteLine("==============END================!!!!!!!!!!!!=============");
+            //funcCreateRaceDelegatePrint(); //create a dummy race and see printout
+==============!!!!!!!!!!!================!!!!!!!!!!!!=============
+1StitchedFinalPdf=Entire tracklist: A Pdf: Begin raceList: A Track>>>>>>>>>>>:
+ raceList:
+Race: {HeaderAndFirstHorse: {Header: height=9319 newHeight=9319 spCount=0 imgFileName= imgPath= racenumber=1}
+{Horse: height= 17296 newHeight=17296 spCount=0 imgFileName= imgPath= raceNumber=1}
+} Begin: {Horse: height= 13220 newHeight=13220 spCount=0 imgFileName= imgPath= raceNumber=1}
+, {Horse: height= 14204 newHeight=14204 spCount=0 imgFileName= imgPath= raceNumber=1}
+, {Horse: height= 12513 newHeight=12513 spCount=0 imgFileName= imgPath= raceNumber=1}
+, {Horse: height= 13485 newHeight=13485 spCount=0 imgFileName= imgPath= raceNumber=1}
+, {Horse: height= 12311 newHeight=12311 spCount=0 imgFileName= imgPath= raceNumber=1}
+, {Horse: height= 12474 newHeight=12474 spCount=0 imgFileName= imgPath= raceNumber=1}
+, {Horse: height= 11293 newHeight=11293 spCount=0 imgFileName= imgPath= raceNumber=1}
+,  Race: {HeaderAndFirstHorse: {Header: height=8710 newHeight=8710 spCount=0 imgFileName= imgPath= racenumber=2}
+{Horse: height= 10961 newHeight=10961 spCount=0 imgFileName= imgPath= raceNumber=2}
+} Begin: {Horse: height= 11252 newHeight=11252 spCount=0 imgFileName= imgPath= raceNumber=2}
+, {Horse: height= 18834 newHeight=18834 spCount=0 imgFileName= imgPath= raceNumber=2}
+, {Horse: height= 18315 newHeight=18315 spCount=0 imgFileName= imgPath= raceNumber=2}
+, {Horse: height= 15103 newHeight=15103 spCount=0 imgFileName= imgPath= raceNumber=2}
+, {Horse: height= 11255 newHeight=11255 spCount=0 imgFileName= imgPath= raceNumber=2}
+, {Horse: height= 12008 newHeight=12008 spCount=0 imgFileName= imgPath= raceNumber=2}
+, {Horse: height= 11889 newHeight=11889 spCount=0 imgFileName= imgPath= raceNumber=2}
+,  Race: {HeaderAndFirstHorse: {Header: height=8971 newHeight=8971 spCount=0 imgFileName= imgPath= racenumber=3}
+{Horse: height= 12851 newHeight=12851 spCount=0 imgFileName= imgPath= raceNumber=3}
+} Begin: {Horse: height= 13022 newHeight=13022 spCount=0 imgFileName= imgPath= raceNumber=3}
+, {Horse: height= 12762 newHeight=12762 spCount=0 imgFileName= imgPath= raceNumber=3}
+, {Horse: height= 14936 newHeight=14936 spCount=0 imgFileName= imgPath= raceNumber=3}
+, {Horse: height= 13000 newHeight=13000 spCount=0 imgFileName= imgPath= raceNumber=3}
+, {Horse: height= 18139 newHeight=18139 spCount=0 imgFileName= imgPath= raceNumber=3}
+, {Horse: height= 16061 newHeight=16061 spCount=0 imgFileName= imgPath= raceNumber=3}
+, {Horse: height= 15806 newHeight=15806 spCount=0 imgFileName= imgPath= raceNumber=3}
+, {Horse: height= 19478 newHeight=19478 spCount=0 imgFileName= imgPath= raceNumber=3}
+,  Race: {HeaderAndFirstHorse: {Header: height=9232 newHeight=9232 spCount=0 imgFileName= imgPath= racenumber=4}
+{Horse: height= 18551 newHeight=18551 spCount=0 imgFileName= imgPath= raceNumber=4}
+} Begin: {Horse: height= 18526 newHeight=18526 spCount=0 imgFileName= imgPath= raceNumber=4}
+, {Horse: height= 14115 newHeight=14115 spCount=0 imgFileName= imgPath= raceNumber=4}
+, {Horse: height= 13885 newHeight=13885 spCount=0 imgFileName= imgPath= raceNumber=4}
+, {Horse: height= 14199 newHeight=14199 spCount=0 imgFileName= imgPath= raceNumber=4}
+, {Horse: height= 17010 newHeight=17010 spCount=0 imgFileName= imgPath= raceNumber=4}
+, {Horse: height= 16031 newHeight=16031 spCount=0 imgFileName= imgPath= raceNumber=4}
+, {Horse: height= 18860 newHeight=18860 spCount=0 imgFileName= imgPath= raceNumber=4}
+,
+
+==============END================!!!!!!!!!!!!=============

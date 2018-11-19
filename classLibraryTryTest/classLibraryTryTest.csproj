@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BA4123DE-3269-4D7B-91FF-5C69475C2719}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{75290A95-8A52-4849-851E-36618420C250}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConsoleAppStichpdfNeat</RootNamespace>
-    <AssemblyName>ConsoleAppStichpdfNeat</AssemblyName>
+    <RootNamespace>classLibraryTryTest</RootNamespace>
+    <AssemblyName>classLibraryTryTest</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="classLibraryTryTest">
-      <HintPath>..\classLibraryTryTest\bin\Debug\classLibraryTryTest.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,25 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\Constants.cs" />
-    <Compile Include="NestedElements\Header.cs" />
-    <Compile Include="NestedElements\HeaderAndFirstHorse.cs" />
-    <Compile Include="NestedElements\Horse.cs" />
-    <Compile Include="NestedElements\Race.cs" />
-    <Compile Include="NestedElements\Spacer.cs" />
-    <Compile Include="NestedElements\StitchedFinalPdf.cs" />
-    <Compile Include="NestedElements\Track.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="LibClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestHarness.cs" />
-    <Compile Include="Util\GeneatingFunction.cs" />
-    <Compile Include="Util\PageBound.cs" />
-    <Compile Include="Util\PageDetail.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

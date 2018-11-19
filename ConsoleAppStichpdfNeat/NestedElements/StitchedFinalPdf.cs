@@ -16,6 +16,31 @@ namespace ConsoleAppStichpdfNeat.NestedElements
             trackList = new List<Track>();
         }
 
+        public StitchedFinalPdf addTrack(Track t)
+        {
+            this.trackList.Add(t);
+            return this;
+        }
+
+        public override string ToString()
+        {
+            string res = "A Pdf: ";
+            int trackno = 1;
+            foreach(Track vTrack in trackList) //readable
+            {
+                res = res + vTrack.ToString();
+                
+                //trackStr =
+                //foreach(Race<Horse> vRace in vTrack.raceList)
+                //{
+                //    string raceStr = vRace.ToString() + "\n";
+                //}
+
+            }
+            //trackList.ForEach(vtrack => { res = res + "444-"; vtrack.raceList.ForEach(vrace => { res = res + vrace.ToString() + "\n"; });  }); unweildy
+            return String.Format("Entire tracklist: {0} ", res);
+        }
+
     }
 
 

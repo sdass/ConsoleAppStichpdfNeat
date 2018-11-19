@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ConsoleAppStichpdfNeat.Config;
 using ConsoleAppStichpdfNeat.NestedElements;
 using ConsoleAppStichpdfNeat.Util;
+using classLibraryTryTest;
 
 namespace ConsoleAppStichpdfNeat
 {
@@ -17,50 +18,57 @@ namespace ConsoleAppStichpdfNeat
             Console.WriteLine("width=" + Constants.pageWidth + " height=" + Constants.pageHeight + "spacerHeight=" + Constants.spacerHeight + " in inches.");
 
 
-            GeneatingFunction gen = new GeneatingFunction();
-            // gen.generatePdfCard(5); //GeneratgeneratePdfCard(6); //track 6-12
-            funcDelegate();
+            GeneatingFunction gen = new GeneatingFunction(); //create all data
+
+            //testLibcall(); need to do pubicly with gacutil cmdline utility to avoid recompiling
+            // gen.generatePdfCard(1);  //track 5-12 //data for debugging
+            StitchedFinalPdf pdfData =  gen.generateAPdfStructure(1);// 1 track only
+            Console.WriteLine("==============!!!!!!!!!!!================!!!!!!!!!!!!=============");
+            Console.WriteLine("1StitchedFinalPdf=" + pdfData); // 1 track at a time
+            Console.WriteLine("==============END================!!!!!!!!!!!!=============");
+            //funcCreateRaceDelegatePrint(); //create a dummy race and see printout
+            // stringTestForGeneralizing();
+            TestHarness.tryPageCalculation();
+
             Console.ReadKey();
 
 
         }
 
-        private static void funcDelegate()
+
+        private static void funcCreateRaceDelegatePrint()
         {
-            //LinkedList<string> ls = new LinkedList<string>();
-            List<String> ls = new List<string>();
-            ls.Add("A");
-            ls.Add("B");
-            ls.Add("C");
 
-            HeaderAndFirstHorse header_1sthorse = new HeaderAndFirstHorse(new Header(110), new Horse(180));
-            Race<Horse> r = (new Race<Horse>()).setRaceTop(header_1sthorse).addHorse(new Horse(102)).addHorse(new Horse(104)).addHorse(new Horse(106)).addHorse(new Horse(108));
-            //printStuff(r);
-            Console.WriteLine(r.headerFirstHorse.ToString());
-            List<Horse> r2 = r.secondAndOtherHorseList;
-            string horse_list = printStuff(r2); //horse
-            Console.WriteLine("horse_list=" + horse_list);
-
-
-            List<Horse> lhorses = r.secondAndOtherHorseList;
-            Console.WriteLine("printStuff=" + printStuff(ls)); //string
+            HeaderAndFirstHorse header_1sthorse = new HeaderAndFirstHorse(new Header(110, "", "", 1, ""), new Horse(180, "", "", 1, ""));
+            Race<Horse> r = (new Race<Horse>()).setRaceTop(header_1sthorse).addHorse(new Horse(102, "", "", 1, "")).addHorse(new Horse(104, "", "", 1, "")).addHorse(new Horse(106, "", "", 1, "")).addHorse(new Horse(108, "", "", 1, ""));
+            string raceDescription = getStringOf_Race(r);
+            Console.WriteLine("Race description: " + raceDescription);
             Console.WriteLine("This is end.");
         }
 
-        //main works
 
-        private static string printStuff<T>(List<T> r)
+        private static string getStringOf_Race(Race<Horse> aRace) // works
         {
-            Func<List<T>, String> xListTostr = consolidate;
-            return xListTostr(r);
+            Func<List<Horse>, String> xListTostr = consolidate; //powerful delegate
+            string raceHeaderAnd1stHorse = aRace.headerFirstHorse.ToString();
+            
+            string secondAndOtherHouse = xListTostr(aRace.secondAndOtherHorseList);
+            return raceHeaderAnd1stHorse + secondAndOtherHouse;
 
 
         }
-        private static string consolidate<T>(List<T> lstr)
+        private static void stringTestForGeneralizing()
         {
-            //return "dfsfsf";
+            List<String> ls = new List<string>(); ls.Add("A"); ls.Add("B"); ls.Add("C");
+            Func<List<string>, string> xListTostr = consolidate; //delegate
+            string outstr = xListTostr(ls);
+            Console.WriteLine("outstr=" + outstr);
+        }
+
+        private static string consolidate<T>(List<T> lstr) //use it for general pupose
+        {
             string restr = "Begin: ";
-            // lstr.ForEach(((string)x) => { restr = restr + x + ", " });
+
             lstr.ForEach(b =>
             {
                 if (b.GetType() == typeof(string)) {
@@ -68,11 +76,12 @@ namespace ConsoleAppStichpdfNeat
                     restr += b.ToString() + ": ";
                 } else if (b.GetType() == typeof(Horse))
                 {
-                    Console.WriteLine("Horse type");
+                   Console.WriteLine("Horse type");
                     restr += b.ToString() + ", ";
                 }else if (b.GetType() == typeof(Race<Horse>))
                 {
                     Console.WriteLine("Race type");
+                    //TODO list
 
                 }
             });
@@ -81,6 +90,14 @@ namespace ConsoleAppStichpdfNeat
             return restr;
         }
 
+
+
+        private static void testLibcall()
+        {
+            LibClass libclass = new LibClass();
+            Console.WriteLine(libclass.showMix("abcd", 5));
+            Console.WriteLine(libclass.showMulti("bcde ", 3));
+        }
 
         /*  stub works
             private static string printStuff(List<string> r)
