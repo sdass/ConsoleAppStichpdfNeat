@@ -12,8 +12,17 @@ namespace ConsoleAppStichpdfNeat.Util
         //Height = 9.7991 inch = 97991 tenThouInch
         private int tenThoughInch = 97991;
 
+        private static int horseSeq = 0;
+
         private static readonly Random random = new Random();
 
+        internal static int HorseSequence
+        {
+            get
+            {
+                return ++horseSeq;
+            }
+        }
         private int generateFrom2ndHorseDepth()
         {
             int low = tenThoughInch/9;
@@ -75,7 +84,7 @@ namespace ConsoleAppStichpdfNeat.Util
                     int horseCount = numberOfHorsePerRace();
                     //process header and 1st horse
                     int[] conjugate = generateHeaderAnd1stdHorseDepth();
-                    HeaderAndFirstHorse headerAndFirstHorse_v = new HeaderAndFirstHorse(new Header(conjugate[0], "", "", r, ""), new Horse(conjugate[1], "", "", r, ""));
+                    HeaderAndFirstHorse headerAndFirstHorse_v = new HeaderAndFirstHorse(new Header(conjugate[0], "", "", r, ""), new Horse(GeneatingFunction.HorseSequence ,conjugate[1], "", "", r, ""));
                     //process 2nd horse onward
                     for (int h = 2; h <= horseCount; h++)
                     {
@@ -112,7 +121,7 @@ namespace ConsoleAppStichpdfNeat.Util
                     int horseCount = numberOfHorsePerRace();
                     //process header and 1st horse
                     int[] conjugate = generateHeaderAnd1stdHorseDepth();
-                    HeaderAndFirstHorse hf = new HeaderAndFirstHorse(new Header(conjugate[0],"", "", r,""), new Horse(conjugate[1], "", "", r, ""));
+                    HeaderAndFirstHorse hf = new HeaderAndFirstHorse(new Header(conjugate[0],"", "", r,""), new Horse(GeneatingFunction.HorseSequence,conjugate[1], "", "", r, ""));
                     race = race.setRaceTop(hf);
 
                     //process 2nd horse onward
@@ -121,7 +130,7 @@ namespace ConsoleAppStichpdfNeat.Util
                         int depth = generateFrom2ndHorseDepth();
                         //Horse horse2on = new Horse(height);
                         //horse2.spCount = 0; auto initialize to 0
-                        race = race.addHorse(new Horse(depth, "", "", r, "")); //adding horses on race **********1
+                        race = race.addHorse(new Horse(GeneatingFunction.HorseSequence, depth, "", "", r, "")); //adding horses on race **********1
                         Console.Write("horse-" + h + " height=" + depth + " | ");
 
                     }//horse-for

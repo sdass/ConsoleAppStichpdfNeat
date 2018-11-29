@@ -7,18 +7,41 @@ using ConsoleAppStichpdfNeat.Config;
 using ConsoleAppStichpdfNeat.NestedElements;
 using ConsoleAppStichpdfNeat.Util;
 using classLibraryTryTest;
+using log4net;
 
 namespace ConsoleAppStichpdfNeat
 {
     class Program
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(Program).Name);
         static void Main(string[] args)
         {
             Console.WriteLine("Write to test...");
+
+            /* proof works
+            HeaderLocationOnPage enumHLocation =  HeaderLocationOnPage.MiddleEntry;
+            HeaderLocationOnPage enumHLocation2 = HeaderLocationOnPage.MiddleEntry;
+            enumHLocation2 = HeaderLocationOnPage.SecondToLastEntry;
+            int m = (int) enumHLocation;
+            Console.WriteLine(m + " " + enumHLocation + " " +  enumHLocation2.ToString() +  " if same=" + (enumHLocation == enumHLocation2) );
+
+            */
+
+
+
             Console.WriteLine("width=" + Constants.pageWidth + " height=" + Constants.pageHeight + "spacerHeight=" + Constants.spacerHeight + " in inches.");
 
 
             GeneatingFunction gen = new GeneatingFunction(); //create all data
+
+            /* proof works
+            int x = GeneatingFunction.HoreseSequence;
+            Console.WriteLine("x=" + x);
+            for(int m=0; m < 5; m++)
+            {
+                Console.WriteLine("GeneatingFunction.HoreseSequence=" + GeneatingFunction.HoreseSequence);
+            }
+            */
 
             //testLibcall(); need to do pubicly with gacutil cmdline utility to avoid recompiling
             // gen.generatePdfCard(1);  //track 5-12 //data for debugging
@@ -28,19 +51,100 @@ namespace ConsoleAppStichpdfNeat
             Console.WriteLine("==============END================!!!!!!!!!!!!=============");
             //funcCreateRaceDelegatePrint(); //create a dummy race and see printout
             // stringTestForGeneralizing();
-            TestHarness.tryPageCalculation();
+            //TestHarness.tryPageCalculation(pdfData.trackList.First());
+            List<PageDetail> pgDetails =  TestHarness.optimizeSpace(pdfData.trackList.First());
+            debugPrintPgDetails(pgDetails);
 
             Console.ReadKey();
 
 
         }
 
+        private static void debugPrintPgDetails(List<PageDetail> pglist)
+        {
+            pglist.ForEach(pg => log.Info(pg));
+            log.Info("-------******* End debugging *****------");
+            travesingPagesAsInPrintedCopy(pglist);
+        }
+
+        private static void travesingPagesAsInPrintedCopy(List<PageDetail> pglist)
+        {
+            log.Info("::::::: travesingPagesAsInPrintedCopy() ");
+            pglist.ForEach(pg => {
+                //log.Info(pg);
+                PageDetail p = pg;
+                if (p.isthereAheader)
+                {
+                    //see PageDetail class
+                    int ofConjugatefirstHorseRaceNumber = p.conjugate.firstHorse.raceNumber; 
+                    int ofSecondHorseListFirstHorseRaceNumber = p.secondAndNextHorses.First<Horse>().raceNumber;
+                    //start printing horses|header of small race number first before printing any of higher race number
+
+                if(ofConjugatefirstHorseRaceNumber < ofSecondHorseListFirstHorseRaceNumber) //for 1st race this is always the case
+                    {
+                        log.Info(":::pg-begin: ");
+                        //print header and first horse first
+                        log.Info(p.conjugate);
+                        //print secondAndOtherHorseList
+                        foreach (Horse horse in p.secondAndNextHorses)
+                        {
+                            log.Info(horse);
+                        }
+
+                        log.Info("pg-end:::: ");
+
+                    }
+                    else // secondHorseList has lower race number
+                    { //mixed up 
+                        log.Info(":::pg-begin: ");
+                        List<Horse> horseList = p.secondAndNextHorses;
+                        bool headerFirstHorseNotProcessed = true;
+
+                        for(int i=0; i < horseList.Count; i++)
+                        {
+                            if(horseList[i].raceNumber < ofConjugatefirstHorseRaceNumber)
+                            {
+                                log.Info(horseList[i]); //prints all lower race number horses
+                            }else
+                            {
+                                //got higher race number so process conjugate (hf) first hors.
+                                if (headerFirstHorseNotProcessed)
+                                {
+                                    log.Info(p.conjugate);
+                                    headerFirstHorseNotProcessed = true;
+                                }
+                                log.Info(horseList[i]);
+
+                            }
+                        }
+
+
+                        log.Info("pg-end:::: ");
+                    }
+                
+
+
+
+                }else //no header
+                {
+                    log.Info(":::pg-begin: ");
+                    foreach (Horse horse in p.secondAndNextHorses)
+                    {
+                        log.Info( horse );
+                    }
+                    log.Info("pg-end:::: ");
+                }
+
+            });
+
+            log.Info("-------******* End travesingPagesAsInPrintCopy() *****------");
+        }
 
         private static void funcCreateRaceDelegatePrint()
         {
 
-            HeaderAndFirstHorse header_1sthorse = new HeaderAndFirstHorse(new Header(110, "", "", 1, ""), new Horse(180, "", "", 1, ""));
-            Race<Horse> r = (new Race<Horse>()).setRaceTop(header_1sthorse).addHorse(new Horse(102, "", "", 1, "")).addHorse(new Horse(104, "", "", 1, "")).addHorse(new Horse(106, "", "", 1, "")).addHorse(new Horse(108, "", "", 1, ""));
+            HeaderAndFirstHorse header_1sthorse = new HeaderAndFirstHorse(new Header(110, "", "", 1, ""), new Horse(GeneatingFunction.HorseSequence, 180, "", "", 1, ""));
+            Race<Horse> r = (new Race<Horse>()).setRaceTop(header_1sthorse).addHorse(new Horse(GeneatingFunction.HorseSequence, 102, "", "", 1, "")).addHorse(new Horse(GeneatingFunction.HorseSequence, 104, "", "", 1, "")).addHorse(new Horse(GeneatingFunction.HorseSequence, 106, "", "", 1, "")).addHorse(new Horse(GeneatingFunction.HorseSequence, 108, "", "", 1, ""));
             string raceDescription = getStringOf_Race(r);
             Console.WriteLine("Race description: " + raceDescription);
             Console.WriteLine("This is end.");

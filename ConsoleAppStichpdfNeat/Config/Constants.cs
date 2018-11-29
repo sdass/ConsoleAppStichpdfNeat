@@ -8,6 +8,7 @@ namespace ConsoleAppStichpdfNeat.Config
 {
     class Constants
     {
+        public static int TENTHOUSAND = 10000;
         public static double pageWidth
         { //inch. content width of a pdf page
             get { return 7.38; }
@@ -17,6 +18,12 @@ namespace ConsoleAppStichpdfNeat.Config
             get { return 9.7991; }
         }
 
+        public static double pageHeightIn10thouMultiple
+        { //inch content height of a pdf page
+            get { return 9.7991 * TENTHOUSAND; }
+        }
+
+
         public static double spacerHeight
         { //inch content height of a pdf page
             get { return pageHeight / (9 * 12); } //1/12(lowest horse height)
@@ -25,6 +32,11 @@ namespace ConsoleAppStichpdfNeat.Config
         public static double shrinkMax
         { 
             get { return 0.25; } //inch on a page
+        }
+
+        public static double shrinkMaxIn10thouMultiple
+        {
+            get { return 0.25 *TENTHOUSAND; } //10000 times inch on a page
         }
 
         public static double shrinkMin

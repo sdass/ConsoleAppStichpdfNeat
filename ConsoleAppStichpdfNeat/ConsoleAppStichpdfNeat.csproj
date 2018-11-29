@@ -36,6 +36,10 @@
     <Reference Include="classLibraryTryTest">
       <HintPath>..\classLibraryTryTest\bin\Debug\classLibraryTryTest.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -58,13 +62,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHarness.cs" />
     <Compile Include="Util\GeneatingFunction.cs" />
+    <Compile Include="Util\EntryLocationOnPage.cs" />
     <Compile Include="Util\PageBound.cs" />
     <Compile Include="Util\PageDetail.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="DebuggedOutput.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

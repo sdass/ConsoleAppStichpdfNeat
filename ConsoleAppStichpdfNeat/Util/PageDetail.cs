@@ -9,7 +9,7 @@ namespace ConsoleAppStichpdfNeat.Util
 {
     internal class PageDetail : PageBound
     {
-        internal bool isthereAheader { get; set; } // on this page. can be (1) 1st, (2) middle, or (3) 2nd to bottom entry.
+        internal bool isthereAheader { get; set; } // on this page. can be (0) 1st, (1) middle, or (2) 2nd to bottom entry.
         private HeaderAndFirstHorse headerAndFirstHorse; //if isthereAheader = false then it is empty
         internal List<Horse> secondAndNextHorses { get; set; } //always exist
 
@@ -32,7 +32,6 @@ namespace ConsoleAppStichpdfNeat.Util
         public PageDetail() : base()
         {
             secondAndNextHorses = new List<Horse>();
-            Console.WriteLine("333");
         }
         public override string ToString()
         {
