@@ -70,69 +70,49 @@ namespace ConsoleAppStichpdfNeat
         private static void travesingPagesAsInPrintedCopy(List<PageDetail> pglist)
         {
             log.Info("::::::: travesingPagesAsInPrintedCopy() ");
-            pglist.ForEach(pg => {
-                //log.Info(pg);
+            pglist.ForEach(pg =>
+            {
                 PageDetail p = pg;
-                if (p.isthereAheader)
+                if (!p.isthereAheader)
                 {
-                    //see PageDetail class
-                    int ofConjugatefirstHorseRaceNumber = p.conjugate.firstHorse.raceNumber; 
-                    int ofSecondHorseListFirstHorseRaceNumber = p.secondAndNextHorses.First<Horse>().raceNumber;
-                    //start printing horses|header of small race number first before printing any of higher race number
+                    log.Info(":::pg-begin::::: ");
+                    p.secondAndNextHorses.ForEach(horse => log.Info(horse));
+                    log.Info("::::pg-end:::: ");
+                } else if ((p.isthereAheader) && (p.conjugate.firstHorse.raceNumber > p.secondAndNextHorses.First<Horse>().raceNumber))
+                {
+                    log.Info(":::pg-begin:::::2ndhorselist has lower num ");
+                    List<Horse> horseList = p.secondAndNextHorses;
 
-                if(ofConjugatefirstHorseRaceNumber < ofSecondHorseListFirstHorseRaceNumber) //for 1st race this is always the case
+                    bool headerFirstHorseNotProcessed = true;
+                    for (int i = 0; i < horseList.Count; i++)
                     {
-                        log.Info(":::pg-begin: ");
-                        //print header and first horse first
-                        log.Info(p.conjugate);
-                        //print secondAndOtherHorseList
-                        foreach (Horse horse in p.secondAndNextHorses)
+                        if (headerFirstHorseNotProcessed)
                         {
-                            log.Info(horse);
-                        }
-
-                        log.Info("pg-end:::: ");
-
-                    }
-                    else // secondHorseList has lower race number
-                    { //mixed up 
-                        log.Info(":::pg-begin: ");
-                        List<Horse> horseList = p.secondAndNextHorses;
-                        bool headerFirstHorseNotProcessed = true;
-
-                        for(int i=0; i < horseList.Count; i++)
-                        {
-                            if(horseList[i].raceNumber < ofConjugatefirstHorseRaceNumber)
+                            if (horseList[i].raceNumber == p.conjugate.firstHorse.raceNumber)
                             {
-                                log.Info(horseList[i]); //prints all lower race number horses
-                            }else
-                            {
-                                //got higher race number so process conjugate (hf) first hors.
-                                if (headerFirstHorseNotProcessed)
-                                {
-                                    log.Info(p.conjugate);
-                                    headerFirstHorseNotProcessed = true;
-                                }
-                                log.Info(horseList[i]);
-
+                                headerFirstHorseNotProcessed = false;
+                                log.Info(p.conjugate.header);
+                                log.Info(p.conjugate.firstHorse);
                             }
+                            log.Info(horseList[i]);
                         }
-
-
-                        log.Info("pg-end:::: ");
+                        else
+                        {
+                            log.Info(horseList[i]);
+                        }
+                        
                     }
-                
 
-
-
-                }else //no header
+                        log.Info("::::pg-end:::: ");
+                }
+                else if ((p.isthereAheader) && (p.conjugate.firstHorse.raceNumber <= p.secondAndNextHorses.First<Horse>().raceNumber)) //else equivalent
                 {
-                    log.Info(":::pg-begin: ");
-                    foreach (Horse horse in p.secondAndNextHorses)
-                    {
-                        log.Info( horse );
-                    }
-                    log.Info("pg-end:::: ");
+                    log.Info(":::pg-begin::::: ");
+                    log.Info(p.conjugate.header);
+                    log.Info(p.conjugate.firstHorse);
+                    p.secondAndNextHorses.ForEach(horse => log.Info(horse));
+                    log.Info("::::pg-end:::: ");
+
                 }
 
             });
