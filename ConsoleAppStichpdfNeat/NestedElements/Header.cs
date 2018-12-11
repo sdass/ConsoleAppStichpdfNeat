@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace ConsoleAppStichpdfNeat.NestedElements
 {
-    public class Header
+    public class Header : GeneralAttributes
     {
+      internal int id { get; set; }
         internal double height { get; set; }
         internal double newHeight { get; set; }
         internal int spCount { get; set; }
@@ -15,7 +16,7 @@ namespace ConsoleAppStichpdfNeat.NestedElements
         internal string imgFileName { get; set; }
         internal string imgPath { get; set; }
 
-        internal short racenumber { get; set; }
+        internal int racenumber { get; set; }
         internal string trackName { get; set; }
 
         internal double topPostion { get; set; }
@@ -23,7 +24,7 @@ namespace ConsoleAppStichpdfNeat.NestedElements
 
 
 
-        public Header(int ht, string imgFileName, string imgPath, short raceNumber, string trackName)
+        public Header(double ht, string imgFileName, string imgPath, int raceNumber, string trackName, bool isHeader)
         {
             this.height = ht;
             newHeight = ht;
@@ -31,12 +32,18 @@ namespace ConsoleAppStichpdfNeat.NestedElements
             this.imgPath = imgPath;
             this.racenumber = raceNumber;
             this.trackName = trackName;
+         this.isHeader = isHeader;
 
         }
 
-        public override string ToString()
+      internal Header(CardStruct.HorseOrHeader h) : this(h.Height, h.FileName, null, h.racenum, null, h.IsHeader)
+      {
+
+      }
+
+      public override string ToString()
         {
-            return "{Header: height=" + height + " newHeight=" + newHeight + " spCount=" + spCount + " imgFileName=" + imgFileName + " imgPath=" + imgPath + " racenumber=" + racenumber + "}\n";
+            return "{Header: id=" + id + " height=" + height + " newHeight=" + newHeight + " spCount=" + spCount + " imgFileName=" + imgFileName + " racenumber=" + racenumber + "}\n";
         }
 
     }

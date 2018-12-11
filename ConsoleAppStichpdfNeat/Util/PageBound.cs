@@ -21,8 +21,10 @@ namespace ConsoleAppStichpdfNeat.Util
 
 
         protected PageBound() {
-            bottom = Config.Constants.pageHeight * Constants.TENTHOUSAND;
-            depthNotYetUsed = Config.Constants.pageHeight * Constants.TENTHOUSAND;
+         //bottom = Config.Constants.pageHeight * Constants.TENTHOUSAND;
+         //depthNotYetUsed = Config.Constants.pageHeight * Constants.TENTHOUSAND;
+         bottom = Config.Constants.PageHeight;
+         depthNotYetUsed = Config.Constants.PageHeight;
         }
     
 

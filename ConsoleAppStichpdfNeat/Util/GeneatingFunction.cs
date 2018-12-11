@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ConsoleAppStichpdfNeat.NestedElements;
+using ConsoleAppStichpdfNeat.Config;
 
 namespace ConsoleAppStichpdfNeat.Util
 {
@@ -31,7 +32,16 @@ namespace ConsoleAppStichpdfNeat.Util
             return depth;
 
         }
-        private int[] generateHeaderAnd1stdHorseDepth()
+
+      private double generateHorsOrHeaderDepth()
+      {
+         int low = Convert.ToInt32(Constants.pageHeightIndots / 9);
+         int high = Convert.ToInt32(Constants.pageHeightIndots / 5);
+         double depth = Convert.ToDouble(random.Next(low, high));
+         return depth;
+
+      }
+      private int[] generateHeaderAnd1stdHorseDepth()
         {
             // 2-10% of 
              int headerTemp = Convert.ToInt32( (tenThoughInch / 9)*(0.8)); //80% height of lowest height horse. 
@@ -78,13 +88,13 @@ namespace ConsoleAppStichpdfNeat.Util
                 Console.Write("================track-" + t + "==================");
 
                 int raceCount = numberOfRacesPerTrack();
-                for (short r = 1; r <= raceCount; r++)
+                for (int r = 1; r <= raceCount; r++)
                 {
                     Console.Write("     race-" + r + ">>>>>> ");
                     int horseCount = numberOfHorsePerRace();
                     //process header and 1st horse
                     int[] conjugate = generateHeaderAnd1stdHorseDepth();
-                    HeaderAndFirstHorse headerAndFirstHorse_v = new HeaderAndFirstHorse(new Header(conjugate[0], "", "", r, ""), new Horse(GeneatingFunction.HorseSequence ,conjugate[1], "", "", r, ""));
+                    HeaderAndFirstHorse headerAndFirstHorse_v = new HeaderAndFirstHorse(new Header(conjugate[0], "", "", r, "", true), new Horse(GeneatingFunction.HorseSequence ,conjugate[1], "", "", r, "", true, false));
                     //process 2nd horse onward
                     for (int h = 2; h <= horseCount; h++)
                     {
@@ -114,14 +124,14 @@ namespace ConsoleAppStichpdfNeat.Util
                 Console.Write("================track-" + t + "==================");
 
                 int raceCount = numberOfRacesPerTrack();
-                for (short r = 1; r <= raceCount; r++)
+                for (int r = 1; r <= raceCount; r++)
                 {
                     Console.Write("     race-" + r + ">>>>>> ");
                     Race<Horse> race = new Race<Horse>();
                     int horseCount = numberOfHorsePerRace();
                     //process header and 1st horse
                     int[] conjugate = generateHeaderAnd1stdHorseDepth();
-                    HeaderAndFirstHorse hf = new HeaderAndFirstHorse(new Header(conjugate[0],"", "", r,""), new Horse(GeneatingFunction.HorseSequence,conjugate[1], "", "", r, ""));
+                    HeaderAndFirstHorse hf = new HeaderAndFirstHorse(new Header(conjugate[0],"", "", r,"", true), new Horse(GeneatingFunction.HorseSequence,conjugate[1], "", "", r, "", true, false));
                     race = race.setRaceTop(hf);
 
                     //process 2nd horse onward
@@ -130,7 +140,7 @@ namespace ConsoleAppStichpdfNeat.Util
                         int depth = generateFrom2ndHorseDepth();
                         //Horse horse2on = new Horse(height);
                         //horse2.spCount = 0; auto initialize to 0
-                        race = race.addHorse(new Horse(GeneatingFunction.HorseSequence, depth, "", "", r, "")); //adding horses on race **********1
+                        race = race.addHorse(new Horse(GeneatingFunction.HorseSequence, depth, "", "", r, "", false, false)); //adding horses on race **********1
                         Console.Write("horse-" + h + " height=" + depth + " | ");
 
                     }//horse-for
@@ -141,9 +151,60 @@ namespace ConsoleAppStichpdfNeat.Util
                 pdfData = pdfData.addTrack(track); //adding track to pdf ************************3
             }//track-for
 
+         Horse lastHorse = pdfData.trackList.Last().raceList.Last<Race<Horse>>().secondAndOtherHorseList.Last<Horse>();
+         lastHorse.IsLastHorseOfTheCard = true;
             return pdfData;
         }
 
+      public List<CardStruct.Race> generateCardStructFullCard() //***
+      {
+         //all races of 1 track
+         List<CardStruct.Race> allRacesOnaTrack = new List<CardStruct.Race>();
+         int hCounter = 0; // horse id will start at 1 for all track
+
+         int raceCount = numberOfRacesPerTrack();
+         for(int r = 1; r <= raceCount; r++)
+         {
+            CardStruct.Race oneRaceNode = new CardStruct.Race();
+            oneRaceNode.raceNumber = ""+r;
+            oneRaceNode.allHorsesWithRaceHeader = new List<CardStruct.HorseOrHeader>();
+            //for loop for horse-series
+            int horseCount = numberOfHorsePerRace();
+            for (int hh = 0; hh <= horseCount; hh++) {
+               CardStruct.HorseOrHeader horseORheader = new CardStruct.HorseOrHeader();
+               
+               horseORheader.Height = generateHorsOrHeaderDepth();
+               horseORheader.racenum = r;
+               if (hh == 0) //header
+               {
+                  horseORheader.Id = 0;
+                  horseORheader.IsHeader = true;
+
+               }
+               else
+               {
+                  horseORheader.Id = ++hCounter;
+               }
+                                 
+               if(hh == 1) //1st horse
+               {
+                  horseORheader.IsFirstHorseOfRace = true;
+               }else if(hh == horseCount) //last
+               {
+                  horseORheader.IsLastHorseOfRace = true;
+               }
+               //last horse of last race
+               if( (r == raceCount) && (hh == horseCount))
+               {
+                  horseORheader.IsLastHorseOfTheCard = true;
+               }
+               oneRaceNode.allHorsesWithRaceHeader.Add(horseORheader);
+            }
+
+            allRacesOnaTrack.Add(oneRaceNode);             
+         }
+         return allRacesOnaTrack;
+      }
 
     }
 }

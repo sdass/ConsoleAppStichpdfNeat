@@ -8,7 +8,7 @@ using ConsoleAppStichpdfNeat.Util;
 
 namespace ConsoleAppStichpdfNeat.NestedElements
 {
-    public class Horse
+    public class Horse : GeneralAttributes
     {
         internal int id { get; set; }
         internal string imgFileName { get; set; }
@@ -21,14 +21,14 @@ namespace ConsoleAppStichpdfNeat.NestedElements
         internal int spCount { get; set; }
         internal double newHeight { get; set; }
 
-        internal short raceNumber { get; set; }
+        internal int raceNumber { get; set; }
         internal string trackName { get; set; }
 
         //following will be filled out during calculation
         internal PageBased positionOnPage;
         
 
-        public Horse(int id, int ht, string imgFileName, string imgPath, short raceNumber, string trackName)
+        public Horse(int id, double ht, string imgFileName, string imgPath, int raceNumber, string trackName, bool is1sthorseOfRace, bool isLastHorseOfCard)
         {
             this.id = id;
 
@@ -39,10 +39,22 @@ namespace ConsoleAppStichpdfNeat.NestedElements
             this.imgPath = imgPath;
             this.raceNumber = raceNumber;
             this.trackName = trackName;
+
+            this.isFirstHorseOfRace = is1sthorseOfRace;
+            this.isLastHorseOfRace = isLastHorseOfCard;
+
+
+
             positionOnPage = new PageBased();
         }
 
-        public override string ToString()
+      internal Horse(CardStruct.HorseOrHeader h) : this(h.Id, h.Height, h.FileName, null, h.racenum, null, h.IsFirstHorseOfRace, h.IsLastHorseOfRace)
+      {
+
+      }
+
+
+      public override string ToString()
         {
             return "{Horse: id=" + id + " height= " + height +  " newHeight=" + newHeight + " spCount=" + spCount +  " imgFileName=" + imgFileName + " imgPath=" + imgPath + " raceNumber=" + raceNumber +  " positionOnPage=" + positionOnPage + "}\n";
         }

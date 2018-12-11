@@ -12,7 +12,7 @@ namespace ConsoleAppStichpdfNeat
 {
     class TestHarness
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Program).Name);
+        private static readonly ILog log = LogManager.GetLogger(typeof(TestHarness).Name);
         public static void tryPageCalculation(Track aTrack)
         {
             log.Info("----->>>>>>>>>>>inside tryPageCalculation() . . . begin <<<<<<");
@@ -78,7 +78,68 @@ namespace ConsoleAppStichpdfNeat
 
         }
 
-        public static List<PageDetail> optimizeSpace(Track aTrack) //mimicked after tryPageCalculation() and enhanced
+      //00000000000000000000---begin---000000000000000000000000000
+      public static List<PageDetail> useOptimalSpace(List<Race<Horse>> listOfRace) //mimicked after tryPageCalculation() and enhanced
+      {
+         string raceStr = "";
+         listOfRace.ForEach(r => raceStr += r);
+         log.Info("PRE:" + raceStr);
+         log.Info("@@@@@@@@@@@@@@@@@@@@@@Begin . . . useOptimalSpace ...PageDetail . . . . .1 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+         List<PageDetail> pages = new List<PageDetail>();
+         PageDetail firstPg = new PageDetail();
+         pages.Add(firstPg);
+
+         for (int r = 0; r < listOfRace.Count; r++)
+         {
+            Race<Horse> arace = listOfRace[r];
+            //---------- fit header & 1st horse ----------------            
+            HeaderAndFirstHorse hf = arace.headerFirstHorse;
+            if ((hf.header.height + hf.firstHorse.height) > Constants.PageHeight)
+               throw new Exception("Horse or Header size too big " + hf);
+
+            PageDetail curr = pages.Last<PageDetail>();
+            if (curr.depthNotYetUsed > (hf.header.height + hf.firstHorse.height))
+            {
+               fitHeaderWithFirstHorse(curr, hf);
+            }
+            else //hf does not fit at the bottom. So do 3 tasks: (1) mark last horse. (2) add a page. (3) fit hf for new race
+            {
+               markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryEOP); //(1) //override here
+               pages.Add(new PageDetail()); //(2)
+               curr = pages.Last<PageDetail>();
+               fitHeaderWithFirstHorse(curr, hf); //(3)
+            }
+            //-------- fit 2nd and other horses ----------
+            for (int h = 0; h < arace.secondAndOtherHorseList.Count; h++)
+            {
+               Horse ahorse = arace.secondAndOtherHorseList[h];
+               curr = pages.Last<PageDetail>();
+               if (ahorse.height > Constants.PageHeight)
+                  throw new Exception("Horse size too big " + ahorse);
+               if (curr.depthNotYetUsed > ahorse.height)
+               {
+                  fitAHorse(curr, ahorse);
+               }
+               else //horse height is larger than leftover space
+               {
+                  pages.Add(new PageDetail());
+                  curr = pages.Last<PageDetail>();
+                  fitAHorse(curr, ahorse);
+               }
+
+            }
+            markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryMOP); //last horse per race. conditionally overridden if LastEntryMOP
+
+         }
+
+         return pages;
+      }
+
+
+
+      //00000000000000---end---0000000000000000000
+
+      public static List<PageDetail> optimizeSpace(Track aTrack) //mimicked after tryPageCalculation() and enhanced
         {
             log.Info("PRE:" + aTrack);
             Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@Begin . . . PageDetail . . . . .1 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");

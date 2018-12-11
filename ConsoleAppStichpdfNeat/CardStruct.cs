@@ -24,6 +24,7 @@ namespace ConsoleAppStichpdfNeat
          public bool IsLastHorseOfRace;
          public bool IsFirstHorseOnPage;
          public bool IsLastHorseOnPage;
+         public bool IsLastHorseOfTheCard;
          public double Height;
          public double NewHeight;
          public double SpaceBetween;
@@ -44,7 +45,7 @@ namespace ConsoleAppStichpdfNeat
          public override string ToString()
          {
             return "CardStruct.HorseOrHeader: Id=" + Id + " FileName=" + FileName + " IsHeader=" + IsHeader + " IsFirstHorseOfRace=" + IsFirstHorseOfRace
-               + " IsLastHorseOfRace=" + IsLastHorseOfRace + " IsFirstHorseOnPage=" + IsFirstHorseOnPage + " IsLastHorseOnPage=" + IsLastHorseOnPage
+               + " IsLastHorseOfRace=" + IsLastHorseOfRace + " IsFirstHorseOnPage=" + IsFirstHorseOnPage + " IsLastHorseOnPage=" + IsLastHorseOnPage + "IsLastHorseOfTheCard=" + IsLastHorseOfTheCard
                + " Height=" + Height + " NewHeight=" + NewHeight + " SpaceBetween=" + SpaceBetween + " PageBreak=" + PageBreak + " ContinueOnNextPage=" + ContinueOnNextPage
                + " ResidualSpace=" + ResidualSpace + " racenum=" + racenum + " pgnum=" + pgnum;
          }
@@ -65,7 +66,8 @@ namespace ConsoleAppStichpdfNeat
 
             }
          }
-      }
+
+      }      
 
       /*
       public static void debugResult(List<HorseOrHeader> horses)

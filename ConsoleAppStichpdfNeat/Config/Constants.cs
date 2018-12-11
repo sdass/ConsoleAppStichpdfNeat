@@ -8,7 +8,31 @@ namespace ConsoleAppStichpdfNeat.Config
 {
     class Constants
     {
-        public static int TENTHOUSAND = 10000;
+      public static double pageHeightIndots = 702.0; // 9.75 inch * 72 dots/inch
+
+      public static double PageHeight
+      {
+         get { return pageHeightIndots; }
+         set { pageHeightIndots = value; }
+      }
+
+      public static double ShrinkMax
+      {
+         get { return 0.25 * 72; } //inch * dots per inch
+      }
+
+      public static double ShrinkMin
+      {
+         get { return 0.125 * 72; } //inch * dots per inch
+      }
+
+      public static double LastPageMinimumFillout
+      {
+         get { return pageHeightIndots * 0.25; } //dots per page * 0.25 (1/4 of a page)
+      }
+
+
+      public static int TENTHOUSAND = 10000;
         public static double pageWidth
         { //inch. content width of a pdf page
             get { return 7.38; }
