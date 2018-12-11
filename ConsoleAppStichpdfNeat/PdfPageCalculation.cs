@@ -141,40 +141,50 @@ namespace ConsoleAppStichpdfNeat
             PageDetail p = pg;
             if (!p.isthereAheader)
             {
-               log.Info(":::pg-begin::::: ");
+               log.Info(":::pg-begin-A::::: ");
                p.secondAndNextHorses.ForEach(horse => log.Info(horse));
                log.Info("::::pg-end:::: ");
             }
             else if ((p.isthereAheader) && (p.conjugate.firstHorse.raceNumber > p.secondAndNextHorses.First<Horse>().raceNumber))
             {
-               log.Info(":::pg-begin:::::2ndhorselist has lower num ");
-               List<Horse> horseList = p.secondAndNextHorses;
+               log.Info(":::pg-begin-B:::::2ndhorselist has lower num ");
+               List<Horse> secondAndNexthorseList = p.secondAndNextHorses;
 
                bool headerFirstHorseNotProcessed = true;
-               for (int i = 0; i < horseList.Count; i++)
+               for (int i = 0; i < secondAndNexthorseList.Count; i++)
                {
                   if (headerFirstHorseNotProcessed)
                   {
-                     if (horseList[i].raceNumber == p.conjugate.firstHorse.raceNumber)
+                     if (secondAndNexthorseList[i].raceNumber == p.conjugate.firstHorse.raceNumber)
                      {
                         headerFirstHorseNotProcessed = false;
                         log.Info(p.conjugate.header);
                         log.Info(p.conjugate.firstHorse);
                      }
-                     log.Info(horseList[i]);
+                     log.Info(secondAndNexthorseList[i]);
                   }
                   else
                   {
-                     log.Info(horseList[i]);
+                     log.Info(secondAndNexthorseList[i]);
                   }
 
+               } //for ends
+               /* if still headerFirstHorseNotProcessed is true then use case means: new|higher race # on header-first (at end
+                * of page). Logic: horse.p.conjugate.firstHorse.raceNumber > all other race number on page. process as below.
+               */
+               if (headerFirstHorseNotProcessed)
+               {
+                  headerFirstHorseNotProcessed = false;
+                  log.Info(p.conjugate.header);
+                  log.Info(p.conjugate.firstHorse);
+                  log.Info("::::new race at page-end:::: ");
                }
 
                log.Info("::::pg-end:::: ");
             }
             else if ((p.isthereAheader) && (p.conjugate.firstHorse.raceNumber <= p.secondAndNextHorses.First<Horse>().raceNumber)) //else equivalent
             {
-               log.Info(":::pg-begin::::: ");
+               log.Info(":::pg-begin-C::::: ");
                log.Info(p.conjugate.header);
                log.Info(p.conjugate.firstHorse);
                p.secondAndNextHorses.ForEach(horse => log.Info(horse));

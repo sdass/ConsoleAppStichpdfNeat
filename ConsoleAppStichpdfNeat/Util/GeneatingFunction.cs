@@ -67,8 +67,8 @@ namespace ConsoleAppStichpdfNeat.Util
         private int numberOfRacesPerTrack()
         {
             //6-12 
-            int totalRaceNumber = random.Next(6, 12);
-            totalRaceNumber = 4; //hardcoded
+            int totalRaceNumber = random.Next(6, 14);
+            totalRaceNumber = random.Next(4, 11); //hardcoded = 4
             Console.WriteLine("number Of Races=" + totalRaceNumber + " per track." );
             return totalRaceNumber;
 
