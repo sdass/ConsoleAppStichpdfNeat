@@ -52,7 +52,7 @@ namespace ConsoleAppStichpdfNeat
 
         private static void fitHeaderWithFirstHorse(PageDetail curr, HeaderAndFirstHorse hf)
         {
-          if(curr.depthNotYetUsed == Config.Constants.pageHeight)
+          if(curr.depthNotYetUsed == Config.Constants.PageHeight)
            {
             hf.firstHorse.positionOnPage.where = EntryLocationOnPage.FirstEntryOnPage;
            }
@@ -66,7 +66,7 @@ namespace ConsoleAppStichpdfNeat
 
         private static void fitAHorse(PageDetail curr, Horse ahorse)
         {
-         if (curr.depthNotYetUsed == Config.Constants.pageHeight)
+         if (curr.depthNotYetUsed == Config.Constants.PageHeight)
          {
             ahorse.positionOnPage.where = EntryLocationOnPage.FirstEntryOnPage;
          }
@@ -147,9 +147,6 @@ namespace ConsoleAppStichpdfNeat
 
          return pages;
       }
-
-
-
       //00000000000000---end---0000000000000000000
 
       public static List<PageDetail> optimizeSpace(Track aTrack) //mimicked after tryPageCalculation() and enhanced

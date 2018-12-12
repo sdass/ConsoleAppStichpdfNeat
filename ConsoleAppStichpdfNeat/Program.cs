@@ -29,7 +29,7 @@ namespace ConsoleAppStichpdfNeat
 
 
 
-            Console.WriteLine("width=" + Constants.pageWidth + " height=" + Constants.pageHeight + "spacerHeight=" + Constants.spacerHeight + " in inches.");
+            Console.WriteLine("width=" + Constants.pageWidth + " height=" + Constants.InchpageHeight + "spacerHeight=" + Constants.spacerHeight + " in inches.");
 
 
             GeneatingFunction gen = new GeneatingFunction(); //create all data
