@@ -53,7 +53,7 @@
     <Compile Include="CardStruct.cs" />
     <Compile Include="Config\Constants.cs" />
     <Compile Include="Config\ConstatsOld.cs" />
-    <Compile Include="NestedElements\GeneralAttributes.cs" />
+    <Compile Include="NestedElements\MiscAttributes.cs" />
     <Compile Include="NestedElements\Header.cs" />
     <Compile Include="NestedElements\HeaderAndFirstHorse.cs" />
     <Compile Include="NestedElements\Horse.cs" />

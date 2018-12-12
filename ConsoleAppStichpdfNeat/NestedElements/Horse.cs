@@ -8,7 +8,7 @@ using ConsoleAppStichpdfNeat.Util;
 
 namespace ConsoleAppStichpdfNeat.NestedElements
 {
-    public class Horse : GeneralAttributes
+    public class Horse : MiscAttributes
     {
         internal int id { get; set; }
         internal string imgFileName { get; set; }
@@ -28,7 +28,7 @@ namespace ConsoleAppStichpdfNeat.NestedElements
         internal PageBased positionOnPage;
         
 
-        public Horse(int id, double ht, string imgFileName, string imgPath, int raceNumber, string trackName, bool is1sthorseOfRace, bool isLastHorseOfCard)
+        public Horse(int id, double ht, string imgFileName, string imgPath, int raceNumber, string trackName, bool is1sthorseOfRace, bool isLastHorseOfRace, bool isLastHorseOfCard)
         {
             this.id = id;
 
@@ -41,14 +41,15 @@ namespace ConsoleAppStichpdfNeat.NestedElements
             this.trackName = trackName;
 
             this.isFirstHorseOfRace = is1sthorseOfRace;
-            this.isLastHorseOfRace = isLastHorseOfCard;
+            this.isLastHorseOfRace = isLastHorseOfRace;
+            this.IsLastHorseOfTheCard = isLastHorseOfCard;
 
 
 
-            positionOnPage = new PageBased();
+         positionOnPage = new PageBased();
         }
 
-      internal Horse(CardStruct.HorseOrHeader h) : this(h.Id, h.Height, h.FileName, null, h.racenum, null, h.IsFirstHorseOfRace, h.IsLastHorseOfRace)
+      internal Horse(CardStruct.HorseOrHeader h) : this(h.Id, h.Height, h.FileName, null, h.racenum, null, h.IsFirstHorseOfRace, h.IsLastHorseOfRace, h.IsLastHorseOfTheCard)
       {
 
       }
@@ -69,7 +70,7 @@ namespace ConsoleAppStichpdfNeat.NestedElements
 
         internal PageBased()
         {
-            where = EntryLocationOnPage.MiddleEntry; // most situation and safe
+            where = EntryLocationOnPage.MiddleEntryOnPage; // initializing to most cases and override later to specific (first, lasst)
             leftspaceatEnd = -1; // indicate not set yet
 
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleAppStichpdfNeat.NestedElements
 {
-    public class Header : GeneralAttributes
+    public class Header : MiscAttributes
     {
       internal int id { get; set; }
         internal double height { get; set; }

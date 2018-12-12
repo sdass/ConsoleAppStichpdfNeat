@@ -52,6 +52,10 @@ namespace ConsoleAppStichpdfNeat
 
         private static void fitHeaderWithFirstHorse(PageDetail curr, HeaderAndFirstHorse hf)
         {
+          if(curr.depthNotYetUsed == Config.Constants.pageHeight)
+           {
+            hf.firstHorse.positionOnPage.where = EntryLocationOnPage.FirstEntryOnPage;
+           }
             curr.isthereAheader = true;
             curr.conjugate = hf;
             curr.runningDepth = curr.runningDepth + hf.header.height + hf.firstHorse.height;
@@ -62,13 +66,19 @@ namespace ConsoleAppStichpdfNeat
 
         private static void fitAHorse(PageDetail curr, Horse ahorse)
         {
-            curr.secondAndNextHorses.Add(ahorse);
+         if (curr.depthNotYetUsed == Config.Constants.pageHeight)
+         {
+            ahorse.positionOnPage.where = EntryLocationOnPage.FirstEntryOnPage;
+         }
+         curr.secondAndNextHorses.Add(ahorse);
             curr.runningDepth = curr.runningDepth + ahorse.height;
             curr.depthNotYetUsed = curr.bottom - curr.runningDepth;
             ahorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
             curr.entryCount = curr.entryCount + 1;
 
         }
+
+      
         private static void markLastHorseOfRaceOnPage(PageDetail curr, EntryLocationOnPage whereOnPg )
         {
             Horse last = curr.secondAndNextHorses.Last();
@@ -77,8 +87,9 @@ namespace ConsoleAppStichpdfNeat
             last.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
 
         }
+        
 
-      //00000000000000000000---begin---000000000000000000000000000
+      //00000000000000000000--- MOST REFINED begin---000000000000000000000000000
       public static List<PageDetail> useOptimalSpace(List<Race<Horse>> listOfRace) //mimicked after tryPageCalculation() and enhanced
       {
          string raceStr = "";
@@ -102,9 +113,9 @@ namespace ConsoleAppStichpdfNeat
             {
                fitHeaderWithFirstHorse(curr, hf);
             }
-            else //hf does not fit at the bottom. So do 3 tasks: (1) mark last horse. (2) add a page. (3) fit hf for new race
+            else //hf does not fit at the bottom. So do 3 tasks: (1) mark last horse on page. (2) add a page. (3) fit hf for new race
             {
-               markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryEOP); //(1) //override here
+               markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryOnPage); //(1) //override here
                pages.Add(new PageDetail()); //(2)
                curr = pages.Last<PageDetail>();
                fitHeaderWithFirstHorse(curr, hf); //(3)
@@ -122,13 +133,15 @@ namespace ConsoleAppStichpdfNeat
                }
                else //horse height is larger than leftover space
                {
-                  pages.Add(new PageDetail());
+                  //1. mark last horse on page. 2. Next, add a new page
+                  markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryOnPage); //1
+                  pages.Add(new PageDetail()); //2
                   curr = pages.Last<PageDetail>();
                   fitAHorse(curr, ahorse);
                }
 
             }
-            markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryMOP); //last horse per race. conditionally overridden if LastEntryMOP
+            // No need markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryMOP); //last horse per race. conditionally overridden if LastEntryMOP
 
          }
 
@@ -162,7 +175,7 @@ namespace ConsoleAppStichpdfNeat
                 }
                 else //hf does not fit at the bottom. So do 3 tasks: (1) mark last horse. (2) add a page. (3) fit hf for new race
                 {
-                    markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryEOP); //(1) //override here
+                    markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryOnPage); //(1) //override here
                     pages.Add(new PageDetail()); //(2)
                     curr = pages.Last<PageDetail>();
                     fitHeaderWithFirstHorse(curr, hf); //(3)
@@ -186,7 +199,7 @@ namespace ConsoleAppStichpdfNeat
                     }
 
                 }
-                markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryMOP); //last horse per race. conditionally overridden if LastEntryMOP
+               // This call no need markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryMOP); //last horse per race. conditionally overridden if LastEntryMOP
 
             }
 

@@ -12,19 +12,28 @@ namespace ConsoleAppStichpdfNeat.Util
     {
         // no differentiation between top and middle entries. LastEntry is marked and treated differently.
         //top
-        FirstEntry = 0,
+       //no need FirstEntry = 0,
 
-       //middle
-        MiddleEntry,
+      FirstEntryOnPage = 0,
 
+      MiddleEntryOnPage,
+
+      LastEntryOnPage,
+
+
+      /* no need
        //last horse of race at the End of page
         LastEntryEOP,
-
+        
         //last horse of race at the Middle of page
-        LastEntryMOP
+        LastEntryMOP,
 
+      //THE last horse of THE last race
+      THELAST
 
-    };
+         */
+
+   };
 
 
 }

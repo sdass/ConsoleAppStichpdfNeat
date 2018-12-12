@@ -94,7 +94,7 @@ namespace ConsoleAppStichpdfNeat.Util
                     int horseCount = numberOfHorsePerRace();
                     //process header and 1st horse
                     int[] conjugate = generateHeaderAnd1stdHorseDepth();
-                    HeaderAndFirstHorse headerAndFirstHorse_v = new HeaderAndFirstHorse(new Header(conjugate[0], "", "", r, "", true), new Horse(GeneatingFunction.HorseSequence ,conjugate[1], "", "", r, "", true, false));
+                    HeaderAndFirstHorse headerAndFirstHorse_v = new HeaderAndFirstHorse(new Header(conjugate[0], "", "", r, "", true), new Horse(GeneatingFunction.HorseSequence ,conjugate[1], "", "", r, "", true, false, false));
                     //process 2nd horse onward
                     for (int h = 2; h <= horseCount; h++)
                     {
@@ -131,7 +131,7 @@ namespace ConsoleAppStichpdfNeat.Util
                     int horseCount = numberOfHorsePerRace();
                     //process header and 1st horse
                     int[] conjugate = generateHeaderAnd1stdHorseDepth();
-                    HeaderAndFirstHorse hf = new HeaderAndFirstHorse(new Header(conjugate[0],"", "", r,"", true), new Horse(GeneatingFunction.HorseSequence,conjugate[1], "", "", r, "", true, false));
+                    HeaderAndFirstHorse hf = new HeaderAndFirstHorse(new Header(conjugate[0],"", "", r,"", true), new Horse(GeneatingFunction.HorseSequence,conjugate[1], "", "", r, "", true, false, false));
                     race = race.setRaceTop(hf);
 
                     //process 2nd horse onward
@@ -140,7 +140,7 @@ namespace ConsoleAppStichpdfNeat.Util
                         int depth = generateFrom2ndHorseDepth();
                         //Horse horse2on = new Horse(height);
                         //horse2.spCount = 0; auto initialize to 0
-                        race = race.addHorse(new Horse(GeneatingFunction.HorseSequence, depth, "", "", r, "", false, false)); //adding horses on race **********1
+                        race = race.addHorse(new Horse(GeneatingFunction.HorseSequence, depth, "", "", r, "", false, false, false)); //adding horses on race **********1
                         Console.Write("horse-" + h + " height=" + depth + " | ");
 
                     }//horse-for
@@ -179,7 +179,6 @@ namespace ConsoleAppStichpdfNeat.Util
                {
                   horseORheader.Id = 0;
                   horseORheader.IsHeader = true;
-
                }
                else
                {

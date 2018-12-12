@@ -72,8 +72,8 @@ namespace ConsoleAppStichpdfNeat
         private static void funcCreateRaceDelegatePrint()
         {
 
-            HeaderAndFirstHorse header_1sthorse = new HeaderAndFirstHorse(new Header(110, "", "", 1, "", true), new Horse(GeneatingFunction.HorseSequence, 180, "", "", 1, "", true, false));
-            Race<Horse> r = (new Race<Horse>()).setRaceTop(header_1sthorse).addHorse(new Horse(GeneatingFunction.HorseSequence, 102, "", "", 1, "", false, false)).addHorse(new Horse(GeneatingFunction.HorseSequence, 104, "", "", 1, "", false, false)).addHorse(new Horse(GeneatingFunction.HorseSequence, 106, "", "", 1, "", false, false)).addHorse(new Horse(GeneatingFunction.HorseSequence, 108, "", "", 1, "", false, true));
+            HeaderAndFirstHorse header_1sthorse = new HeaderAndFirstHorse(new Header(110, "", "", 1, "", true), new Horse(GeneatingFunction.HorseSequence, 180, "", "", 1, "", true, false, false));
+            Race<Horse> r = (new Race<Horse>()).setRaceTop(header_1sthorse).addHorse(new Horse(GeneatingFunction.HorseSequence, 102, "", "", 1, "", false, false, false)).addHorse(new Horse(GeneatingFunction.HorseSequence, 104, "", "", 1, "", false, false, false)).addHorse(new Horse(GeneatingFunction.HorseSequence, 106, "", "", 1, "", false, false, false)).addHorse(new Horse(GeneatingFunction.HorseSequence, 108, "", "", 1, "", false, true, true));
             string raceDescription = getStringOf_Race(r);
             Console.WriteLine("Race description: " + raceDescription);
             Console.WriteLine("This is end.");
