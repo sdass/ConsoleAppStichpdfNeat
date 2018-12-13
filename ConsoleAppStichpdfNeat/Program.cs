@@ -53,14 +53,14 @@ namespace ConsoleAppStichpdfNeat
          System.Diagnostics.Debug.WriteLine("^^^^^^^^^^^^^^^^ENDED^^^^^^^^^^^^^^^^^^");
 
 
-            //StitchedFinalPdf pdfData =  gen.generateAPdfStructure(1);// 1 track only
+            StitchedFinalPdf pdfData =  gen.generateAPdfStructure(1);// 1 track only
             Console.WriteLine("==============!!!!!!!!!!!================!!!!!!!!!!!!=============");
             //Console.WriteLine("1StitchedFinalPdf=" + pdfData); // 1 track at a time
             Console.WriteLine("==============END================!!!!!!!!!!!!=============");
             //funcCreateRaceDelegatePrint(); //create a dummy race and see printout
             // stringTestForGeneralizing();
-            //TestHarness.tryPageCalculation(pdfData.trackList.First());
-            //List<PageDetail> pgDetails =  TestHarness.optimizeSpace(pdfData.trackList.First());
+            //PageOptimization.tryPageCalculation(pdfData.trackList.First());
+            //List<PageDetail> pgDetails =  PageOptimization.optimizeSpace(pdfData.trackList.First());
             //PdfPageCalculation.debugPrintPgDetails(pgDetails);
 
             Console.ReadKey();

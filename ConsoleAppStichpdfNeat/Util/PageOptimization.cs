@@ -10,9 +10,9 @@ using log4net;
 
 namespace ConsoleAppStichpdfNeat
 {
-    class TestHarness
+    class PageOptimization
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(TestHarness).Name);
+        private static readonly ILog log = LogManager.GetLogger(typeof(PageOptimization).Name);
         public static void tryPageCalculation(Track aTrack)
         {
             log.Info("----->>>>>>>>>>>inside tryPageCalculation() . . . begin <<<<<<");
@@ -75,14 +75,14 @@ namespace ConsoleAppStichpdfNeat
             curr.depthNotYetUsed = curr.bottom - curr.runningDepth;
             ahorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
             curr.entryCount = curr.entryCount + 1;
-
         }
+
 
 
       //compact the logic
       // if ( (mayhaveFirstHorse != null) && (mayhaveFirstHorse.raceNumber > lastOf2ndHorseList.raceNumber) ) --> mayhave
       //else --> lastOf2ndHorse
-      private static void markLastHorseOfRaceOnPage(PageDetail curr, EntryLocationOnPage whereOnPg ) //RENAME method and clear param passing to avoid ambiguity
+      private static void markLastHorseOnPage(PageDetail curr ) //RENAME method and clear param passing to avoid ambiguity
         {
           //critical pre-condition
           Horse lastOf2ndHorseList = curr.secondAndNextHorses.Last();
@@ -90,8 +90,9 @@ namespace ConsoleAppStichpdfNeat
           
           if(mayhaveFirstHorse == null)
          {
-            lastOf2ndHorseList.positionOnPage.where = whereOnPg;
+            lastOf2ndHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
             lastOf2ndHorseList.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
+
 
          }
          else
@@ -99,11 +100,11 @@ namespace ConsoleAppStichpdfNeat
             if (mayhaveFirstHorse.raceNumber > lastOf2ndHorseList.raceNumber)
             {
                //new horse begin at the end of page [use case]
-               mayhaveFirstHorse.positionOnPage.where = whereOnPg;
+               mayhaveFirstHorse.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
                mayhaveFirstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
             }else //comparison pair race number is equal
             {
-               lastOf2ndHorseList.positionOnPage.where = whereOnPg;
+               lastOf2ndHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
                lastOf2ndHorseList.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
 
             }
@@ -138,7 +139,7 @@ namespace ConsoleAppStichpdfNeat
             }
             else //hf does not fit at the bottom. So do 3 tasks: (1) mark last horse on page. (2) add a page. (3) fit hf for new race
             {
-               markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryOnPage); //(1) //override here
+               markLastHorseOnPage(curr); //(1) //override here
                pages.Add(new PageDetail()); //(2)
                curr = pages.Last<PageDetail>();
                fitHeaderWithFirstHorse(curr, hf); //(3)
@@ -157,7 +158,7 @@ namespace ConsoleAppStichpdfNeat
                else //horse height is larger than leftover space
                {
                   //1. mark last horse on page. 2. Next, add a new page
-                  markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryOnPage); //1
+                  markLastHorseOnPage(curr); //1
                   pages.Add(new PageDetail()); //2
                   curr = pages.Last<PageDetail>();
                   fitAHorse(curr, ahorse);
@@ -194,7 +195,7 @@ namespace ConsoleAppStichpdfNeat
                 }
                 else //hf does not fit at the bottom. So do 3 tasks: (1) mark last horse. (2) add a page. (3) fit hf for new race
                 {
-                    markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryOnPage); //(1) //override here
+                    markLastHorseOnPage(curr); //(1) //override here
                     pages.Add(new PageDetail()); //(2)
                     curr = pages.Last<PageDetail>();
                     fitHeaderWithFirstHorse(curr, hf); //(3)

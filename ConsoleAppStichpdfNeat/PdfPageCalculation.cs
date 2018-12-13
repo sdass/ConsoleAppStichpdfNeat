@@ -80,7 +80,6 @@ namespace ConsoleAppStichpdfNeat
 
             outRaces.Add(arace);
          }
-         //mark last horse of last race.
          
          return outRaces;
       }
@@ -88,7 +87,7 @@ namespace ConsoleAppStichpdfNeat
       private List<Race<Horse>> doProcessList(List<Race<Horse>> races)
       {
 
-         List<Util.PageDetail> pages =  TestHarness.useOptimalSpace(races);
+         List<Util.PageDetail> pages =  PageOptimization.useOptimalSpace(races);
          log.Info("DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING ");
          debugPrintPgDetails(pages);
          //travesingPagesAsInPrintedCopy(pages); //works
@@ -105,6 +104,7 @@ namespace ConsoleAppStichpdfNeat
          header.Height = head.height;
          header.NewHeight = head.newHeight;
          header.racenum = head.racenumber;
+         header.FileName = head.imgFileName;
          header.IsHeader = head.isHeader;
          header.pgnum = -1; //1st horse's pg # = header's page number
          
@@ -118,6 +118,7 @@ namespace ConsoleAppStichpdfNeat
          horse.Height = h.height;
          horse.NewHeight = h.newHeight;
          horse.racenum = h.raceNumber;
+         horse.FileName = h.imgFileName;
          horse.IsFirstHorseOfRace = h.isFirstHorseOfRace;
          horse.IsLastHorseOfRace = h.isLastHorseOfRace;
          horse.IsLastHorseOfRace = h.isLastHorseOfRace;
@@ -317,7 +318,6 @@ namespace ConsoleAppStichpdfNeat
 
          */
          header.racenum = h.racenumber;
-         header.pgnum = h.pgno;
 
          return header;
       }

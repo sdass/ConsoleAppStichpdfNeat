@@ -9,8 +9,8 @@ namespace ConsoleAppStichpdfNeat.Util
 {
     internal class PageDetail : PageBound
     {
-        internal bool isthereAheader { get; set; } // on this page. can be (0) 1st, (1) middle, or (2) 2nd to bottom entry.
-        private HeaderAndFirstHorse headerAndFirstHorse; //if isthereAheader = false then it is empty
+        internal bool isthereAheader { get; set; } //  on this page. can be none, 1st, middle, or 2nd to bottom entry.
+      private HeaderAndFirstHorse headerAndFirstHorse; //if isthereAheader == false then it is null
         internal List<Horse> secondAndNextHorses { get; set; } //always exist
 
         public HeaderAndFirstHorse conjugate
