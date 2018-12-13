@@ -79,35 +79,21 @@ namespace ConsoleAppStichpdfNeat
 
 
 
-      //compact the logic
-      // if ( (mayhaveFirstHorse != null) && (mayhaveFirstHorse.raceNumber > lastOf2ndHorseList.raceNumber) ) --> mayhave
-      //else --> lastOf2ndHorse
-      private static void markLastHorseOnPage(PageDetail curr ) //RENAME method and clear param passing to avoid ambiguity
+      private static void markLastHorseOnPage(PageDetail curr ) 
         {
           //critical pre-condition
           Horse lastOf2ndHorseList = curr.secondAndNextHorses.Last();
           Horse mayhaveFirstHorse = (curr.conjugate != null)? curr.conjugate.firstHorse : null;
-          
-          if(mayhaveFirstHorse == null)
+
+         if ((mayhaveFirstHorse != null) && (mayhaveFirstHorse.raceNumber > lastOf2ndHorseList.raceNumber))
+         {
+            //new horse begin at the end of page [use case]
+            mayhaveFirstHorse.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
+            mayhaveFirstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
+         } else
          {
             lastOf2ndHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
             lastOf2ndHorseList.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
-
-
-         }
-         else
-         {
-            if (mayhaveFirstHorse.raceNumber > lastOf2ndHorseList.raceNumber)
-            {
-               //new horse begin at the end of page [use case]
-               mayhaveFirstHorse.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
-               mayhaveFirstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
-            }else //comparison pair race number is equal
-            {
-               lastOf2ndHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
-               lastOf2ndHorseList.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
-
-            }
          }         
 
         }
