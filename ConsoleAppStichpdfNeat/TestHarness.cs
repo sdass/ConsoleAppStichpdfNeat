@@ -78,13 +78,36 @@ namespace ConsoleAppStichpdfNeat
 
         }
 
-      
-        private static void markLastHorseOfRaceOnPage(PageDetail curr, EntryLocationOnPage whereOnPg )
+
+      //compact the logic
+      // if ( (mayhaveFirstHorse != null) && (mayhaveFirstHorse.raceNumber > lastOf2ndHorseList.raceNumber) ) --> mayhave
+      //else --> lastOf2ndHorse
+      private static void markLastHorseOfRaceOnPage(PageDetail curr, EntryLocationOnPage whereOnPg ) //RENAME method and clear param passing to avoid ambiguity
         {
-            Horse last = curr.secondAndNextHorses.Last();
-            // last.positionOnPage.where = EntryLocationOnPage.LastEntryEOP; //last horse of race at the end of page
-            last.positionOnPage.where = whereOnPg;
-            last.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
+          //critical pre-condition
+          Horse lastOf2ndHorseList = curr.secondAndNextHorses.Last();
+          Horse mayhaveFirstHorse = (curr.conjugate != null)? curr.conjugate.firstHorse : null;
+          
+          if(mayhaveFirstHorse == null)
+         {
+            lastOf2ndHorseList.positionOnPage.where = whereOnPg;
+            lastOf2ndHorseList.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
+
+         }
+         else
+         {
+            if (mayhaveFirstHorse.raceNumber > lastOf2ndHorseList.raceNumber)
+            {
+               //new horse begin at the end of page [use case]
+               mayhaveFirstHorse.positionOnPage.where = whereOnPg;
+               mayhaveFirstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
+            }else //comparison pair race number is equal
+            {
+               lastOf2ndHorseList.positionOnPage.where = whereOnPg;
+               lastOf2ndHorseList.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
+
+            }
+         }         
 
         }
         
@@ -141,7 +164,6 @@ namespace ConsoleAppStichpdfNeat
                }
 
             }
-            // No need markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryMOP); //last horse per race. conditionally overridden if LastEntryMOP
 
          }
 

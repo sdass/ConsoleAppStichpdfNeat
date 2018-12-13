@@ -44,9 +44,7 @@ namespace ConsoleAppStichpdfNeat.NestedElements
             this.isLastHorseOfRace = isLastHorseOfRace;
             this.IsLastHorseOfTheCard = isLastHorseOfCard;
 
-
-
-         positionOnPage = new PageBased();
+            positionOnPage = new PageBased();
         }
 
       internal Horse(CardStruct.HorseOrHeader h) : this(h.Id, h.Height, h.FileName, null, h.racenum, null, h.IsFirstHorseOfRace, h.IsLastHorseOfRace, h.IsLastHorseOfTheCard)
@@ -70,7 +68,7 @@ namespace ConsoleAppStichpdfNeat.NestedElements
 
         internal PageBased()
         {
-            where = EntryLocationOnPage.MiddleEntryOnPage; // initializing to most cases and override later to specific (first, lasst)
+            where = EntryLocationOnPage.MiddleEntryOnPage; // initializing to most cases and override later to specific (first, last)
             leftspaceatEnd = -1; // indicate not set yet
 
         }
