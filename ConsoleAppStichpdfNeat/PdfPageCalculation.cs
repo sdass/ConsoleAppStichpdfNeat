@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ConsoleAppStichpdfNeat.NestedElements;
 using log4net;
 using ConsoleAppStichpdfNeat.Util;
+using System.Diagnostics;
 
 namespace ConsoleAppStichpdfNeat
 {
@@ -54,7 +55,7 @@ namespace ConsoleAppStichpdfNeat
       {
          //TO_DO
          //debugPrintRace(raceList);
-         List<Race<Horse>> outRaceList = doProcessList(races);
+         List<Race<Horse>> outRaceList = doProcess(races);
          List<CardStruct.Race> outRaces = new List<CardStruct.Race>();
          //int i = 0;
          foreach (Race<Horse> race in outRaceList)
@@ -84,12 +85,12 @@ namespace ConsoleAppStichpdfNeat
          return outRaces;
       }
 
-      private List<Race<Horse>> doProcessList(List<Race<Horse>> races)
+      private List<Race<Horse>> doProcess(List<Race<Horse>> races)
       {
 
          List<Util.PageDetail> pages =  PageOptimization.useOptimalSpace(races);
          log.Info("DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING 1.");
-         SortUtil.getEntriesGroupedInRace(pages);
+         getEntriesGroupedInRace(pages);
          
          debugPrintPgDetails(pages);
          //travesingPagesAsInPrintedCopy(pages); //works
@@ -98,6 +99,7 @@ namespace ConsoleAppStichpdfNeat
          return races; //call process class before
       }
 
+      /*
       private CardStruct.HorseOrHeader prepareHeaderStruct(Header head) //deprecate this
       {
          CardStruct.HorseOrHeader header = new CardStruct.HorseOrHeader();
@@ -112,7 +114,9 @@ namespace ConsoleAppStichpdfNeat
          
          return header;
       }
+      */
 
+         /*
       private CardStruct.HorseOrHeader prepareHorseStruct(Horse h) //deprecate
       {
          CardStruct.HorseOrHeader horse = new CardStruct.HorseOrHeader();
@@ -127,10 +131,11 @@ namespace ConsoleAppStichpdfNeat
          horse.IsLastHorseOfTheCard = h.IsLastHorseOfTheCard;
          //firstHorse.pgnum = 
          horse.ResidualSpace = h.positionOnPage.leftspaceatEnd;
-         /* other item based on logic */
+         // other item based on logic 
          return horse;
 
       }
+      */
 
       public static void debugPrintPgDetails(List<PageDetail> pglist)
       {
@@ -214,7 +219,7 @@ namespace ConsoleAppStichpdfNeat
             if (!p.isthereAheader)
             {
                log.Info(":::pg-begin-A::::: ");
-               p.secondAndNextHorses.ForEach(horse => { log.Info(horse); allentries.Add(getHorseHeaderFromHorse(horse)); });
+               p.secondAndNextHorses.ForEach(horse => { log.Info(horse); allentries.Add(prepareHorseStruct(horse)); });
                log.Info("::::pg-end:::: ");
             }
             else if ((p.isthereAheader) && (p.conjugate.firstHorse.raceNumber > p.secondAndNextHorses.First<Horse>().raceNumber))
@@ -230,14 +235,14 @@ namespace ConsoleAppStichpdfNeat
                      if (secondAndNexthorseList[i].raceNumber == p.conjugate.firstHorse.raceNumber)
                      {
                         headerFirstHorseNotProcessed = false;
-                        log.Info(p.conjugate.header); allentries.Add(getHorseHeaderFromHeader(p.conjugate.header));
-                        log.Info(p.conjugate.firstHorse); allentries.Add(getHorseHeaderFromHorse(p.conjugate.firstHorse));
+                        log.Info(p.conjugate.header); allentries.Add(prepareHeaderStruct(p.conjugate.header));
+                        log.Info(p.conjugate.firstHorse); allentries.Add(prepareHorseStruct(p.conjugate.firstHorse));
                      }
-                     log.Info(secondAndNexthorseList[i]); allentries.Add(getHorseHeaderFromHorse(secondAndNexthorseList[i]));
+                     log.Info(secondAndNexthorseList[i]); allentries.Add(prepareHorseStruct(secondAndNexthorseList[i]));
                   }
                   else
                   {
-                     log.Info(secondAndNexthorseList[i]); allentries.Add(getHorseHeaderFromHorse(secondAndNexthorseList[i]));
+                     log.Info(secondAndNexthorseList[i]); allentries.Add(prepareHorseStruct(secondAndNexthorseList[i]));
                   }
 
                } //for ends
@@ -247,8 +252,8 @@ namespace ConsoleAppStichpdfNeat
                if (headerFirstHorseNotProcessed)
                {
                   headerFirstHorseNotProcessed = false;
-                  log.Info(p.conjugate.header); allentries.Add(getHorseHeaderFromHeader(p.conjugate.header));
-                  log.Info(p.conjugate.firstHorse); allentries.Add(getHorseHeaderFromHorse(p.conjugate.firstHorse));
+                  log.Info(p.conjugate.header); allentries.Add(prepareHeaderStruct(p.conjugate.header));
+                  log.Info(p.conjugate.firstHorse); allentries.Add(prepareHorseStruct(p.conjugate.firstHorse));
                   log.Info("::::new race at page-end:::: ");
                }
 
@@ -257,9 +262,9 @@ namespace ConsoleAppStichpdfNeat
             else if ((p.isthereAheader) && (p.conjugate.firstHorse.raceNumber <= p.secondAndNextHorses.First<Horse>().raceNumber)) //else equivalent
             {
                log.Info(":::pg-begin-C::::: ");
-               log.Info(p.conjugate.header); allentries.Add(getHorseHeaderFromHeader(p.conjugate.header));
-               log.Info(p.conjugate.firstHorse); allentries.Add(getHorseHeaderFromHorse(p.conjugate.firstHorse));
-               p.secondAndNextHorses.ForEach(horse => { log.Info(horse); allentries.Add(getHorseHeaderFromHorse(horse)); });
+               log.Info(p.conjugate.header); allentries.Add(prepareHeaderStruct(p.conjugate.header));
+               log.Info(p.conjugate.firstHorse); allentries.Add(prepareHorseStruct(p.conjugate.firstHorse));
+               p.secondAndNextHorses.ForEach(horse => { log.Info(horse); allentries.Add(prepareHorseStruct(horse)); });
                log.Info("::::pg-end:::: ");
 
             }
@@ -271,7 +276,8 @@ namespace ConsoleAppStichpdfNeat
       }
 
 
-     internal static CardStruct.HorseOrHeader getHorseHeaderFromHorse(Horse h)
+      //internal static CardStruct.HorseOrHeader getHorseHeaderFromHorse(Horse h)
+      internal static CardStruct.HorseOrHeader prepareHorseStruct(Horse h)
       {
          CardStruct.HorseOrHeader horse = new CardStruct.HorseOrHeader();
          horse.Id = h.id;
@@ -294,7 +300,8 @@ namespace ConsoleAppStichpdfNeat
         return horse;
       }
 
-      internal static CardStruct.HorseOrHeader getHorseHeaderFromHeader(Header h)
+      // internal static CardStruct.HorseOrHeader getHorseHeaderFromHeader(Header h)
+      internal static CardStruct.HorseOrHeader prepareHeaderStruct(Header h)
       {
          CardStruct.HorseOrHeader header = new CardStruct.HorseOrHeader();
 
@@ -304,25 +311,68 @@ namespace ConsoleAppStichpdfNeat
          //header.IsFirstHorseOfRace =???
          //header.IsLastHorseOfRace = ???
 
-         /* revisit
-         header.IsFirstHorseOnPage = (h.positionOnPage.where == EntryLocationOnPage.FirstEntryOnPage) ? true : false;
-         header.IsLastHorseOnPage = ((h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) || (h.positionOnPage.where == EntryLocationOnPage.LastEntryEOP)) ? true : false;
-         header.IsLastHorseOfTheCard = (h.positionOnPage.where == EntryLocationOnPage.THELAST) ? true : false;
-         */
          header.Height = h.height;
          header.NewHeight = h.newHeight;
          header.SpaceBetween = h.spCount;
 
-         /* revisit
-         header.PageBreak = (h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) ? true : false;
-         header.ContinueOnNextPage = (h.positionOnPage.where == EntryLocationOnPage.LastEntryEOP) ? false : true;
-         header.ResidualSpace = h.positionOnPage.leftspaceatEnd;
-
-         */
          header.racenum = h.racenumber;
          header.pgnum = -1;
 
          return header;
       }
+
+      internal static List<CardStruct.Race> getEntriesGroupedInRace(List<PageDetail> pglist)
+      {
+         List<CardStruct.Race> zl = new List<CardStruct.Race>();
+         List<CardStruct.HorseOrHeader> hlist = getEntrylist(pglist);
+         List<CardStruct.HorseOrHeader> headers = hlist.FindAll(hh => hh.Id == 0);
+         foreach (var head in headers)
+         {
+            CardStruct.Race r = new CardStruct.Race();
+            r.raceNumber = "" + head.racenum;
+            r.allHorsesWithRaceHeader = hlist.FindAll(hh => hh.racenum == head.racenum);
+            r.allHorsesWithRaceHeader.Sort();
+            zl.Add(r);
+         }
+         //CardStruct.debugPrintACard(zl);
+         tinydebug(zl);
+         return zl;
+      }
+
+      private static void tinydebug(List<CardStruct.Race> l)
+      {
+         l.ForEach(r => {
+            Debug.Print("-----------raceNumber=" + r.raceNumber + "-----------");
+            r.allHorsesWithRaceHeader.ForEach(h => Debug.Print("id=" + h.Id + "raceno=" + h.racenum));
+         });
+      }
+      private static List<CardStruct.HorseOrHeader> getEntrylist(List<PageDetail> pglist)
+      {
+         List<CardStruct.HorseOrHeader> ml = new List<CardStruct.HorseOrHeader>();
+         foreach (PageDetail p in pglist)
+         {
+            if (p.conjugate != null)
+            {
+               ml.Add(PdfPageCalculation.prepareHeaderStruct(p.conjugate.header));
+               ml.Add(PdfPageCalculation.prepareHorseStruct(p.conjugate.firstHorse));
+            }
+            foreach (Horse h in p.secondAndNextHorses)
+            {
+               ml.Add(PdfPageCalculation.prepareHorseStruct(h));
+
+            }
+         }
+
+         /* WORKS except memory
+         List<CardStruct.HorseOrHeader> nl = ml.OrderBy(h => h.Id).OrderBy(o => o.racenum).ToList(); //LINQ works!!! but memory intensive
+         nl.ForEach((h => Debug.Print("id=" + h.Id + "race=" + h.racenum)));
+
+         */
+         ml.Sort(); //prfect done through model's custom compareTo()
+
+         ml.ForEach((h => Debug.Print("id=" + h.Id + "race=" + h.racenum)));
+         return ml;
+      }
+
    }
 }
