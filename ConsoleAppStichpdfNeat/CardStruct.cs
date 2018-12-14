@@ -34,12 +34,25 @@ namespace ConsoleAppStichpdfNeat
          public int racenum;
          public int pgnum;
 
+         /*
          public int CompareTo(HorseOrHeader other)
          {
             return this.Id.CompareTo(other.Id);
          }
 
+         */
          //TBD
+
+         public int CompareTo(HorseOrHeader other)
+         {
+            int result = this.racenum.CompareTo(other.racenum);
+            if (result == 0)
+            {
+               result = this.Id.CompareTo(other.Id);
+            }
+            return result;
+         }
+
 
 
          public override string ToString()

@@ -88,7 +88,9 @@ namespace ConsoleAppStichpdfNeat
       {
 
          List<Util.PageDetail> pages =  PageOptimization.useOptimalSpace(races);
-         log.Info("DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING ");
+         log.Info("DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING 1.");
+         SortUtil.getEntriesGroupedInRace(pages);
+         
          debugPrintPgDetails(pages);
          //travesingPagesAsInPrintedCopy(pages); //works
          List<CardStruct.HorseOrHeader> entries = packEntiresInPrintOder(pages);
@@ -96,7 +98,7 @@ namespace ConsoleAppStichpdfNeat
          return races; //call process class before
       }
 
-      private CardStruct.HorseOrHeader prepareHeaderStruct(Header head)
+      private CardStruct.HorseOrHeader prepareHeaderStruct(Header head) //deprecate this
       {
          CardStruct.HorseOrHeader header = new CardStruct.HorseOrHeader();
          header.Id = head.id;
@@ -111,7 +113,7 @@ namespace ConsoleAppStichpdfNeat
          return header;
       }
 
-      private CardStruct.HorseOrHeader prepareHorseStruct(Horse h)
+      private CardStruct.HorseOrHeader prepareHorseStruct(Horse h) //deprecate
       {
          CardStruct.HorseOrHeader horse = new CardStruct.HorseOrHeader();
          horse.Id = h.id;
@@ -269,7 +271,7 @@ namespace ConsoleAppStichpdfNeat
       }
 
 
-     private static CardStruct.HorseOrHeader getHorseHeaderFromHorse(Horse h)
+     internal static CardStruct.HorseOrHeader getHorseHeaderFromHorse(Horse h)
       {
          CardStruct.HorseOrHeader horse = new CardStruct.HorseOrHeader();
          horse.Id = h.id;
@@ -292,7 +294,7 @@ namespace ConsoleAppStichpdfNeat
         return horse;
       }
 
-      private static CardStruct.HorseOrHeader getHorseHeaderFromHeader(Header h)
+      internal static CardStruct.HorseOrHeader getHorseHeaderFromHeader(Header h)
       {
          CardStruct.HorseOrHeader header = new CardStruct.HorseOrHeader();
 
@@ -318,6 +320,7 @@ namespace ConsoleAppStichpdfNeat
 
          */
          header.racenum = h.racenumber;
+         header.pgnum = -1;
 
          return header;
       }
