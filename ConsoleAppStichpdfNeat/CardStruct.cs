@@ -58,7 +58,7 @@ namespace ConsoleAppStichpdfNeat
          public override string ToString()
          {
             return "CardStruct.HorseOrHeader: Id=" + Id + " FileName=" + FileName + " IsHeader=" + IsHeader + " IsFirstHorseOfRace=" + IsFirstHorseOfRace
-               + " IsLastHorseOfRace=" + IsLastHorseOfRace + " IsFirstHorseOnPage=" + IsFirstHorseOnPage + " IsLastHorseOnPage=" + IsLastHorseOnPage + "IsLastHorseOfTheCard=" + IsLastHorseOfTheCard
+               + " IsLastHorseOfRace=" + IsLastHorseOfRace + " IsFirstHorseOnPage=" + IsFirstHorseOnPage + " IsLastHorseOnPage=" + IsLastHorseOnPage + " IsLastHorseOfTheCard=" + IsLastHorseOfTheCard
                + " Height=" + Height + " NewHeight=" + NewHeight + " SpaceBetween=" + SpaceBetween + " PageBreak=" + PageBreak + " ContinueOnNextPage=" + ContinueOnNextPage
                + " ResidualSpace=" + ResidualSpace + " racenum=" + racenum + " pgnum=" + pgnum;
          }

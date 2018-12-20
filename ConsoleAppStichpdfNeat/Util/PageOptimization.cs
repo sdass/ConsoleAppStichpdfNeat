@@ -60,9 +60,9 @@ namespace ConsoleAppStichpdfNeat
             curr.conjugate = hf;
             curr.runningDepth = curr.runningDepth + hf.header.height + hf.firstHorse.height;
             curr.depthNotYetUsed = curr.bottom - curr.runningDepth;
-            curr.entryCount = curr.entryCount + 2;
             hf.firstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
-        }
+            curr.entryCount = curr.entryCount + 2;
+      }
 
         private static void fitAHorse(PageDetail curr, Horse ahorse)
         {
@@ -89,11 +89,11 @@ namespace ConsoleAppStichpdfNeat
          {
             //new horse begin at the end of page [use case]
             mayhaveFirstHorse.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
-            mayhaveFirstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
+           // mayhaveFirstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
          } else
          {
             lastOf2ndHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
-            lastOf2ndHorseList.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
+           // lastOf2ndHorseList.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
          }         
 
         }

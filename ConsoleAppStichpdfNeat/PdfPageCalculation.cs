@@ -13,7 +13,7 @@ namespace ConsoleAppStichpdfNeat
    class PdfPageCalculation
    {
       private static readonly ILog log = LogManager.GetLogger(typeof(PdfPageCalculation).Name);
-      public List<CardStruct.Race> calculate(List<CardStruct.Race> races) //***
+      public List<CardStruct.Race> calculate(List<CardStruct.Race> races) //*** 1.
       {
 
          // CardStruct.debugPrintACard(raceList);
@@ -51,232 +51,26 @@ namespace ConsoleAppStichpdfNeat
          return raceList;
       }
 
-      private List<CardStruct.Race> processToFitOnPageAndReturn(List<Race<Horse>> races) //***
+      private List<CardStruct.Race> processToFitOnPageAndReturn(List<Race<Horse>> races)
       {
-         //TO_DO
          //debugPrintRace(raceList);
-         List<Race<Horse>> outRaceList = doProcess(races);
-         List<CardStruct.Race> outRaces = new List<CardStruct.Race>();
-         //int i = 0;
-         foreach (Race<Horse> race in outRaceList)
-         {
-            CardStruct.Race arace = new CardStruct.Race();
-            arace.allHorsesWithRaceHeader = new List<CardStruct.HorseOrHeader>();
-            arace.raceNumber = "" + race.headerFirstHorse.firstHorse.raceNumber;
+         List<CardStruct.Race> outRaceList = doProcess(races);
+         return outRaceList;
 
-            //copy header  
-            CardStruct.HorseOrHeader header = prepareHeaderStruct(race.headerFirstHorse.header);
-            arace.allHorsesWithRaceHeader.Add(header);
-
-            //copy first-horse
-            CardStruct.HorseOrHeader horse = prepareHorseStruct(race.headerFirstHorse.firstHorse);
-            arace.allHorsesWithRaceHeader.Add(horse);
-
-            //copy 2nd and all horses
-            foreach (Horse h in race.secondAndOtherHorseList)
-            {
-               horse = prepareHorseStruct(h);
-               arace.allHorsesWithRaceHeader.Add(horse);
-            }
-
-            outRaces.Add(arace);
-         }
-         
-         return outRaces;
       }
 
-      private List<Race<Horse>> doProcess(List<Race<Horse>> races)
+
+      private List<CardStruct.Race> doProcess(List<Race<Horse>> races)
       {
+         List<Util.PageDetail> pages = PageOptimization.useOptimalSpace(races);
+         Debug.Print("DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING ");
+         //debugPrintPgDetails(pages);
+         List<CardStruct.Race> horsesByrace = getEntriesGroupedInRace(pages);
 
-         List<Util.PageDetail> pages =  PageOptimization.useOptimalSpace(races);
-         log.Info("DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING 1.");
-         getEntriesGroupedInRace(pages);
-         
-         debugPrintPgDetails(pages);
-         //travesingPagesAsInPrintedCopy(pages); //works
-         List<CardStruct.HorseOrHeader> entries = packEntiresInPrintOder(pages);
-         entries.ForEach(e => { string hh = e.IsHeader ? "Header" : "Horse"; log.Info("id=" + e.Id + " racenum=" + e.racenum + "<" + hh + ">"); } );
-         return races; //call process class before
+         //TO-DO TO-DO
+         return horsesByrace; //call process class before
       }
 
-      /*
-      private CardStruct.HorseOrHeader prepareHeaderStruct(Header head) //deprecate this
-      {
-         CardStruct.HorseOrHeader header = new CardStruct.HorseOrHeader();
-         header.Id = head.id;
-         header.IsHeader = true;
-         header.Height = head.height;
-         header.NewHeight = head.newHeight;
-         header.racenum = head.racenumber;
-         header.FileName = head.imgFileName;
-         header.IsHeader = head.isHeader;
-         header.pgnum = -1; //1st horse's pg # = header's page number
-         
-         return header;
-      }
-      */
-
-         /*
-      private CardStruct.HorseOrHeader prepareHorseStruct(Horse h) //deprecate
-      {
-         CardStruct.HorseOrHeader horse = new CardStruct.HorseOrHeader();
-         horse.Id = h.id;
-         horse.Height = h.height;
-         horse.NewHeight = h.newHeight;
-         horse.racenum = h.raceNumber;
-         horse.FileName = h.imgFileName;
-         horse.IsFirstHorseOfRace = h.isFirstHorseOfRace;
-         horse.IsLastHorseOfRace = h.isLastHorseOfRace;
-         horse.IsLastHorseOfRace = h.isLastHorseOfRace;
-         horse.IsLastHorseOfTheCard = h.IsLastHorseOfTheCard;
-         //firstHorse.pgnum = 
-         horse.ResidualSpace = h.positionOnPage.leftspaceatEnd;
-         // other item based on logic 
-         return horse;
-
-      }
-      */
-
-      public static void debugPrintPgDetails(List<PageDetail> pglist)
-      {
-         log.Info("-------******* Begin debugging *****------");
-         pglist.ForEach(pg => log.Info(pg));
-         log.Info("-------******* End debugging *****------");         
-      }
-
-      private static void travesingPagesAsInPrintedCopy(List<PageDetail> pglist)
-      {
-         log.Info("::::::::::travesingPagesAsInPrintedCopy():::::::::::");
-         pglist.ForEach(pg =>
-         {
-            PageDetail p = pg;
-            if (!p.isthereAheader)
-            {
-               log.Info(":::pg-begin-A::::: ");
-               p.secondAndNextHorses.ForEach(horse => log.Info(horse));
-               log.Info("::::pg-end:::: ");
-            }
-            else if ((p.isthereAheader) && (p.conjugate.firstHorse.raceNumber > p.secondAndNextHorses.First<Horse>().raceNumber))
-            {
-               log.Info(":::pg-begin-B:::::2ndhorselist has lower num ");
-               List<Horse> secondAndNexthorseList = p.secondAndNextHorses;
-
-               bool headerFirstHorseNotProcessed = true;
-               for (int i = 0; i < secondAndNexthorseList.Count; i++)
-               {
-                  if (headerFirstHorseNotProcessed)
-                  {
-                     if (secondAndNexthorseList[i].raceNumber == p.conjugate.firstHorse.raceNumber)
-                     {
-                        headerFirstHorseNotProcessed = false;
-                        log.Info(p.conjugate.header);
-                        log.Info(p.conjugate.firstHorse);
-                     }
-                     log.Info(secondAndNexthorseList[i]);
-                  }
-                  else
-                  {
-                     log.Info(secondAndNexthorseList[i]);
-                  }
-
-               } //for ends
-               /* if still headerFirstHorseNotProcessed is true then use case means: new|higher race # on header-first (at end
-                * of page). Logic: horse.p.conjugate.firstHorse.raceNumber > all other race number on page. process as below.
-               */
-               if (headerFirstHorseNotProcessed)
-               {
-                  headerFirstHorseNotProcessed = false;
-                  log.Info(p.conjugate.header);
-                  log.Info(p.conjugate.firstHorse);
-                  log.Info("::::new race at page-end:::: ");
-               }
-
-               log.Info("::::pg-end:::: ");
-            }
-            else if ((p.isthereAheader) && (p.conjugate.firstHorse.raceNumber <= p.secondAndNextHorses.First<Horse>().raceNumber)) //else equivalent
-            {
-               log.Info(":::pg-begin-C::::: ");
-               log.Info(p.conjugate.header);
-               log.Info(p.conjugate.firstHorse);
-               p.secondAndNextHorses.ForEach(horse => log.Info(horse));
-               log.Info("::::pg-end:::: ");
-
-            }
-
-         });
-
-         log.Info("-------******* End travesingPagesAsInPrintCopy() *****------");
-      }
-
-      //mimicking below from traversingPagesInPrintedCopy()
-      private static List<CardStruct.HorseOrHeader> packEntiresInPrintOder(List<PageDetail> pglist)
-      {
-         List<CardStruct.HorseOrHeader> allentries = new List<CardStruct.HorseOrHeader>();
-         log.Info("::::::::::packEntiresInPrintOder():::::::::::");
-         pglist.ForEach(pg =>
-         {
-            PageDetail p = pg;
-            if (!p.isthereAheader)
-            {
-               log.Info(":::pg-begin-A::::: ");
-               p.secondAndNextHorses.ForEach(horse => { log.Info(horse); allentries.Add(prepareHorseStruct(horse)); });
-               log.Info("::::pg-end:::: ");
-            }
-            else if ((p.isthereAheader) && (p.conjugate.firstHorse.raceNumber > p.secondAndNextHorses.First<Horse>().raceNumber))
-            {
-               log.Info(":::pg-begin-B:::::2ndhorselist has lower num ");
-               List<Horse> secondAndNexthorseList = p.secondAndNextHorses;
-
-               bool headerFirstHorseNotProcessed = true;
-               for (int i = 0; i < secondAndNexthorseList.Count; i++)
-               {
-                  if (headerFirstHorseNotProcessed)
-                  {
-                     if (secondAndNexthorseList[i].raceNumber == p.conjugate.firstHorse.raceNumber)
-                     {
-                        headerFirstHorseNotProcessed = false;
-                        log.Info(p.conjugate.header); allentries.Add(prepareHeaderStruct(p.conjugate.header));
-                        log.Info(p.conjugate.firstHorse); allentries.Add(prepareHorseStruct(p.conjugate.firstHorse));
-                     }
-                     log.Info(secondAndNexthorseList[i]); allentries.Add(prepareHorseStruct(secondAndNexthorseList[i]));
-                  }
-                  else
-                  {
-                     log.Info(secondAndNexthorseList[i]); allentries.Add(prepareHorseStruct(secondAndNexthorseList[i]));
-                  }
-
-               } //for ends
-               /* if still headerFirstHorseNotProcessed is true then use case means: new|higher race # on header-first (at end
-                * of page). Logic: horse.p.conjugate.firstHorse.raceNumber > all other race number on page. process as below.
-               */
-               if (headerFirstHorseNotProcessed)
-               {
-                  headerFirstHorseNotProcessed = false;
-                  log.Info(p.conjugate.header); allentries.Add(prepareHeaderStruct(p.conjugate.header));
-                  log.Info(p.conjugate.firstHorse); allentries.Add(prepareHorseStruct(p.conjugate.firstHorse));
-                  log.Info("::::new race at page-end:::: ");
-               }
-
-               log.Info("::::pg-end:::: ");
-            }
-            else if ((p.isthereAheader) && (p.conjugate.firstHorse.raceNumber <= p.secondAndNextHorses.First<Horse>().raceNumber)) //else equivalent
-            {
-               log.Info(":::pg-begin-C::::: ");
-               log.Info(p.conjugate.header); allentries.Add(prepareHeaderStruct(p.conjugate.header));
-               log.Info(p.conjugate.firstHorse); allentries.Add(prepareHorseStruct(p.conjugate.firstHorse));
-               p.secondAndNextHorses.ForEach(horse => { log.Info(horse); allentries.Add(prepareHorseStruct(horse)); });
-               log.Info("::::pg-end:::: ");
-
-            }
-
-         });
-
-         log.Info("-------******* End packEntiresInPrintOder() *****------");
-         return allentries;
-      }
-
-
-      //internal static CardStruct.HorseOrHeader getHorseHeaderFromHorse(Horse h)
       internal static CardStruct.HorseOrHeader prepareHorseStruct(Horse h)
       {
          CardStruct.HorseOrHeader horse = new CardStruct.HorseOrHeader();
@@ -287,41 +81,36 @@ namespace ConsoleAppStichpdfNeat
          horse.IsLastHorseOfRace = h.isLastHorseOfRace;
          horse.IsFirstHorseOnPage = (h.positionOnPage.where == EntryLocationOnPage.FirstEntryOnPage) ? true : false;
          horse.IsLastHorseOnPage = (h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) ? true : false;
-         horse.IsLastHorseOfTheCard = h.IsLastHorseOfTheCard; 
+         horse.IsLastHorseOfTheCard = h.IsLastHorseOfTheCard;
          horse.Height = h.height;
          horse.NewHeight = h.newHeight;
          horse.SpaceBetween = h.spCount;
          horse.PageBreak = (h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) ? true : false;
-
-         horse.ContinueOnNextPage = ((h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) && h.isLastHorseOfRace ) ? false : true;
+         horse.ContinueOnNextPage = ((h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) && h.isLastHorseOfRace) ? false : true;
          horse.ResidualSpace = h.positionOnPage.leftspaceatEnd;
          horse.racenum = h.raceNumber;
          horse.pgnum = h.pgno;
-        return horse;
+         return horse;
       }
 
-      // internal static CardStruct.HorseOrHeader getHorseHeaderFromHeader(Header h)
+
       internal static CardStruct.HorseOrHeader prepareHeaderStruct(Header h)
       {
          CardStruct.HorseOrHeader header = new CardStruct.HorseOrHeader();
-
          header.Id = h.id;
          header.FileName = h.imgFileName;
-         header.IsHeader = h.isHeader; //true hardcode
-         //header.IsFirstHorseOfRace =???
-         //header.IsLastHorseOfRace = ???
-
+         header.IsHeader = h.isHeader; //true         
          header.Height = h.height;
          header.NewHeight = h.newHeight;
          header.SpaceBetween = h.spCount;
-
          header.racenum = h.racenumber;
          header.pgnum = -1;
+         //other detail on header is unnecessary crowding
 
          return header;
       }
 
-      internal static List<CardStruct.Race> getEntriesGroupedInRace(List<PageDetail> pglist)
+      internal List<CardStruct.Race> getEntriesGroupedInRace(List<PageDetail> pglist)
       {
          List<CardStruct.Race> zl = new List<CardStruct.Race>();
          List<CardStruct.HorseOrHeader> hlist = getEntrylist(pglist);
@@ -331,22 +120,13 @@ namespace ConsoleAppStichpdfNeat
             CardStruct.Race r = new CardStruct.Race();
             r.raceNumber = "" + head.racenum;
             r.allHorsesWithRaceHeader = hlist.FindAll(hh => hh.racenum == head.racenum);
-            r.allHorsesWithRaceHeader.Sort();
+            r.allHorsesWithRaceHeader.Sort(); //must
             zl.Add(r);
          }
-         //CardStruct.debugPrintACard(zl);
-         tinydebug(zl);
          return zl;
       }
 
-      private static void tinydebug(List<CardStruct.Race> l)
-      {
-         l.ForEach(r => {
-            Debug.Print("-----------raceNumber=" + r.raceNumber + "-----------");
-            r.allHorsesWithRaceHeader.ForEach(h => Debug.Print("id=" + h.Id + "raceno=" + h.racenum));
-         });
-      }
-      private static List<CardStruct.HorseOrHeader> getEntrylist(List<PageDetail> pglist)
+      private List<CardStruct.HorseOrHeader> getEntrylist(List<PageDetail> pglist)
       {
          List<CardStruct.HorseOrHeader> ml = new List<CardStruct.HorseOrHeader>();
          foreach (PageDetail p in pglist)
@@ -363,16 +143,25 @@ namespace ConsoleAppStichpdfNeat
             }
          }
 
-         /* WORKS except memory
-         List<CardStruct.HorseOrHeader> nl = ml.OrderBy(h => h.Id).OrderBy(o => o.racenum).ToList(); //LINQ works!!! but memory intensive
-         nl.ForEach((h => Debug.Print("id=" + h.Id + "race=" + h.racenum)));
-
-         */
-         ml.Sort(); //prfect done through model's custom compareTo()
-
-         ml.ForEach((h => Debug.Print("id=" + h.Id + "race=" + h.racenum)));
+         // ml.Sort(); //not needed here
+         // ml.ForEach((h => Debug.Print("id=" + h.Id + "race=" + h.racenum)));
          return ml;
       }
 
+      internal void debugPrintPgDetails(List<PageDetail> pglist)
+      {
+         Debug.Print("-------******* Begin debugging *****------");
+         pglist.ForEach(pg => Debug.Print(pg.ToString()));
+         Debug.Print("-------******* End debugging *****------");
+      }
+
+      private static void tinydebug(List<CardStruct.Race> l)
+      {
+         l.ForEach(r => {
+            Debug.Print("-----------raceNumber=" + r.raceNumber + "-----------");
+            r.allHorsesWithRaceHeader.ForEach(h => Debug.Print("id=" + h.Id + "raceno=" + h.racenum));
+         });
+      }
+     
    }
 }
