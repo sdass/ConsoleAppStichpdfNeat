@@ -115,39 +115,50 @@ namespace ConsoleAppStichpdfNeat
             Race<Horse> arace = listOfRace[r];
             //---------- fit header & 1st horse ----------------            
             HeaderAndFirstHorse hf = arace.headerFirstHorse;
-            if ((hf.header.height + hf.firstHorse.height) > Constants.PageHeight)
-               throw new Exception("Horse or Header size too big " + hf);
-
             PageDetail curr = pages.Last<PageDetail>();
+
             if (curr.depthNotYetUsed > (hf.header.height + hf.firstHorse.height))
             {
                fitHeaderWithFirstHorse(curr, hf);
             }
             else //hf does not fit at the bottom. So do 3 tasks: (1) mark last horse on page. (2) add a page. (3) fit hf for new race
             {
-               markLastHorseOnPage(curr); //(1) //override here
-               pages.Add(new PageDetail()); //(2)
-               curr = pages.Last<PageDetail>();
-               fitHeaderWithFirstHorse(curr, hf); //(3)
+               if (isSqueezable(curr.depthNotYetUsed, (hf.header.height + hf.firstHorse.height)))
+               {
+                  log.Info("isSqueezable TODO");
+               }
+               else
+               {
+                  markLastHorseOnPage(curr); //(1) //override here
+                  pages.Add(new PageDetail()); //(2)
+                  curr = pages.Last<PageDetail>();
+                  fitHeaderWithFirstHorse(curr, hf); //(3)
+               }
             }
             //-------- fit 2nd and other horses ----------
             for (int h = 0; h < arace.secondAndOtherHorseList.Count; h++)
             {
                Horse ahorse = arace.secondAndOtherHorseList[h];
                curr = pages.Last<PageDetail>();
-               if (ahorse.height > Constants.PageHeight)
-                  throw new Exception("Horse size too big " + ahorse);
+
                if (curr.depthNotYetUsed > ahorse.height)
                {
                   fitAHorse(curr, ahorse);
                }
                else //horse height is larger than leftover space
                {
-                  //1. mark last horse on page. 2. Next, add a new page
-                  markLastHorseOnPage(curr); //1
-                  pages.Add(new PageDetail()); //2
-                  curr = pages.Last<PageDetail>();
-                  fitAHorse(curr, ahorse);
+                  if (isSqueezable(curr.depthNotYetUsed, (hf.header.height + hf.firstHorse.height)))
+                  {
+                     log.Info("isSqueezable TODO");
+                  }
+                  else
+                  {
+                     //1. mark last horse on page. 2. Next, add a new page. 3. Fit h at new pg
+                     markLastHorseOnPage(curr); //1
+                     pages.Add(new PageDetail()); //2
+                     curr = pages.Last<PageDetail>();
+                     fitAHorse(curr, ahorse); //3
+                  }
                }
 
             }
@@ -155,6 +166,15 @@ namespace ConsoleAppStichpdfNeat
          }
 
          return pages;
+      }
+
+      private static bool isSqueezable(double depthNotYetUsed, double entryHeight)
+      {
+         log.Info("isSqueeable called() TO-DO");
+         return false;
+
+         bool squeezable = (entryHeight <= (depthNotYetUsed + Constants.ShrinkMax)) ? true : false;
+         return squeezable;
       }
       //00000000000000---end---0000000000000000000
 
@@ -205,7 +225,6 @@ namespace ConsoleAppStichpdfNeat
                     }
 
                 }
-               // This call no need markLastHorseOfRaceOnPage(curr, EntryLocationOnPage.LastEntryMOP); //last horse per race. conditionally overridden if LastEntryMOP
 
             }
 
