@@ -81,12 +81,19 @@ namespace ConsoleAppStichpdfNeat
          horse.IsLastHorseOfRace = h.isLastHorseOfRace;
          horse.IsFirstHorseOnPage = (h.positionOnPage.where == EntryLocationOnPage.FirstEntryOnPage) ? true : false;
          horse.IsLastHorseOnPage = (h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) ? true : false;
-         horse.IsLastHorseOfTheCard = h.IsLastHorseOfTheCard;
          horse.Height = h.height;
          horse.NewHeight = h.newHeight;
          horse.SpaceBetween = h.spCount;
          horse.PageBreak = (h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) ? true : false;
          horse.ContinueOnNextPage = ((h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) && h.isLastHorseOfRace) ? false : true;
+         horse.IsLastHorseOfTheCard = h.IsLastHorseOfTheCard;
+         //localize two fields below for simplification
+         if (horse.IsLastHorseOfTheCard)
+         {
+            horse.IsLastHorseOnPage = true;
+            horse.PageBreak = true;
+            horse.ContinueOnNextPage = false;
+         }
          horse.ResidualSpace = h.positionOnPage.leftspaceatEnd;
          horse.racenum = h.raceNumber;
          horse.pgnum = h.pgno;

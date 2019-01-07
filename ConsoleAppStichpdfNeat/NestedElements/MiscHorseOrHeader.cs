@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleAppStichpdfNeat.NestedElements
 {
-   public abstract class MiscAttributes
+   public abstract class MiscHorseOrHeader
    {
       internal bool isHeader { get; set; }
       internal bool isFirstHorseOfRace { get; set; }

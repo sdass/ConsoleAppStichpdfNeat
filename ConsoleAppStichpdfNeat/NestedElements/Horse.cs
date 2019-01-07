@@ -8,7 +8,7 @@ using ConsoleAppStichpdfNeat.Util;
 
 namespace ConsoleAppStichpdfNeat.NestedElements
 {
-    public class Horse : MiscAttributes
+    public class Horse : MiscHorseOrHeader
     {
         internal int id { get; set; }
         internal string imgFileName { get; set; }

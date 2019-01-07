@@ -89,11 +89,9 @@ namespace ConsoleAppStichpdfNeat
          {
             //new horse begin at the end of page [use case]
             mayhaveFirstHorse.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
-           // mayhaveFirstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
          } else
          {
             lastOf2ndHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
-           // lastOf2ndHorseList.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed; //check this. It should be done earlier. Not here
          }         
 
         }
@@ -125,7 +123,9 @@ namespace ConsoleAppStichpdfNeat
             {
                if (isSqueezable(curr.depthNotYetUsed, (hf.header.height + hf.firstHorse.height)))
                {
-                  log.Info("isSqueezable TODO");
+                  log.Info("isSqueezable TODO squeezeheaderFirsthorse");
+                  squeezeHeaderFirsthorse(curr, hf, (hf.header.height + hf.firstHorse.height), curr.depthNotYetUsed); 
+                  markLastHorseOnPage(curr);
                }
                else
                {
@@ -147,9 +147,11 @@ namespace ConsoleAppStichpdfNeat
                }
                else //horse height is larger than leftover space
                {
-                  if (isSqueezable(curr.depthNotYetUsed, (hf.header.height + hf.firstHorse.height)))
+                  if (isSqueezable(curr.depthNotYetUsed, ahorse.height))
                   {
                      log.Info("isSqueezable TODO");
+                     squeezeHorse(curr, ahorse, ahorse.height, curr.depthNotYetUsed); 
+                     markLastHorseOnPage(curr);
                   }
                   else
                   {
@@ -170,11 +172,48 @@ namespace ConsoleAppStichpdfNeat
 
       private static bool isSqueezable(double depthNotYetUsed, double entryHeight)
       {
-         log.Info("isSqueeable called() TO-DO");
-         return false;
+         log.Info("isSqueezable called() TO-DO");
+         //return false; FOR DEBUGGING return here
 
          bool squeezable = (entryHeight <= (depthNotYetUsed + Constants.ShrinkMax)) ? true : false;
          return squeezable;
+      }
+
+      private static void squeezeHorse(PageDetail curr, Horse entry, double entryHeight, double depthNotYetUsed)
+      {
+         double shrinkFactor = Constants.PageHeight / ( Constants.PageHeight - depthNotYetUsed + entryHeight);
+         // 1a. srink existing entries. header + firsthorse
+         if (curr.conjugate != null)
+         {
+            curr.conjugate.header.newHeight = shrinkFactor * curr.conjugate.header.height;
+            curr.conjugate.firstHorse.newHeight = shrinkFactor * curr.conjugate.firstHorse.height;
+         }
+         //1b. other horses
+         curr.secondAndNextHorses.ForEach(h => h.newHeight = shrinkFactor * h.height);
+         //2. shrink current and add in
+         entry.newHeight = shrinkFactor * entry.height;
+         curr.runningDepth = Constants.PageHeight;
+         curr.depthNotYetUsed = 0;
+         entry.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
+         curr.entryCount = curr.entryCount + 1;
+         curr.secondAndNextHorses.Add(entry);
+         //calling method will set it as last entry on page
+      }
+      private static void squeezeHeaderFirsthorse(PageDetail curr, HeaderAndFirstHorse hf, double entryHeight, double depthNotYetUsed)
+      {
+         double shrinkFactor = Constants.PageHeight / (Constants.PageHeight - depthNotYetUsed + entryHeight);
+         //1. add and srink across         
+         curr.conjugate = hf;
+         curr.conjugate.header.newHeight = shrinkFactor * curr.conjugate.header.height;
+         curr.conjugate.firstHorse.newHeight = shrinkFactor *  curr.conjugate.firstHorse.height;
+         curr.secondAndNextHorses.ForEach(h => h.newHeight = shrinkFactor * h.height);
+         curr.isthereAheader = true;         
+         curr.runningDepth = Constants.PageHeight;
+         curr.depthNotYetUsed = 0;
+         hf.firstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
+         curr.entryCount = curr.entryCount + 2;
+         //calling method responsible to set as last entry on page
+
       }
       //00000000000000---end---0000000000000000000
 
