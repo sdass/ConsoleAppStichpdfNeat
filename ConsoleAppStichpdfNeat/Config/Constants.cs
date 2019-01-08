@@ -8,7 +8,9 @@ namespace ConsoleAppStichpdfNeat.Config
 {
     class Constants
     {
-      public static double pageHeightIndots = 702.0; // 9.75 inch * 72 dots/inch
+      public static double pageHeightIndots = 772.0; // 9.75 inch * 72 dots/inch
+
+      public static bool SKIP_ONGOING_SHRINK = true;
 
       public static double PageHeight
       {

@@ -57,7 +57,7 @@ namespace ConsoleAppStichpdfNeat
             hf.firstHorse.positionOnPage.where = EntryLocationOnPage.FirstEntryOnPage;
            }
             curr.isthereAheader = true;
-            curr.conjugate = hf;
+            curr.addHeaderAndFirstHorse(hf);
             curr.runningDepth = curr.runningDepth + hf.header.height + hf.firstHorse.height;
             curr.depthNotYetUsed = curr.bottom - curr.runningDepth;
             hf.firstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
@@ -81,21 +81,31 @@ namespace ConsoleAppStichpdfNeat
 
       private static void markLastHorseOnPage(PageDetail curr ) 
         {
-          //critical pre-condition
-          Horse lastOf2ndHorseList = curr.secondAndNextHorses.Last();
-          Horse mayhaveFirstHorse = (curr.conjugate != null)? curr.conjugate.firstHorse : null;
+         //Debug.Print("TO-DO" + EntryLocationOnPage.LastEntryOnPage);
+         //critical pre-condition
+         Horse lastOfHeaderAndFirstHorseList = (curr.seeHeaderAndFirstHorseList != null) ? curr.seeHeaderAndFirstHorseList.Last().firstHorse : null;
+         Horse lastOf2ndHorseList = curr.secondAndNextHorses.Last();
+         if (lastOfHeaderAndFirstHorseList != null)
+         {
+            //2 possibilites when header on page
+            if (lastOf2ndHorseList.raceNumber >= lastOfHeaderAndFirstHorseList.raceNumber)
+            {
+               lastOf2ndHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
+            }
+            else
+            {
+               lastOfHeaderAndFirstHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
+            }
 
-         if ((mayhaveFirstHorse != null) && (mayhaveFirstHorse.raceNumber > lastOf2ndHorseList.raceNumber))
+         }
+         else
          {
-            //new horse begin at the end of page [use case]
-            mayhaveFirstHorse.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
-         } else
-         {
+            //no header on page
             lastOf2ndHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
-         }         
+         }
 
-        }
-        
+      }
+
 
       //00000000000000000000--- MOST REFINED begin---000000000000000000000000000
       public static List<PageDetail> useOptimalSpace(List<Race<Horse>> listOfRace) //mimicked after tryPageCalculation() and enhanced
@@ -124,7 +134,7 @@ namespace ConsoleAppStichpdfNeat
                if (isSqueezable(curr.depthNotYetUsed, (hf.header.height + hf.firstHorse.height)))
                {
                   log.Info("isSqueezable TODO squeezeheaderFirsthorse");
-                  squeezeHeaderFirsthorse(curr, hf, (hf.header.height + hf.firstHorse.height), curr.depthNotYetUsed); 
+                  squeezeHeaderFirsthorseThenAdd(curr, hf, (hf.header.height + hf.firstHorse.height), curr.depthNotYetUsed); 
                   markLastHorseOnPage(curr);
                }
                else
@@ -149,8 +159,7 @@ namespace ConsoleAppStichpdfNeat
                {
                   if (isSqueezable(curr.depthNotYetUsed, ahorse.height))
                   {
-                     log.Info("isSqueezable TODO");
-                     squeezeHorse(curr, ahorse, ahorse.height, curr.depthNotYetUsed); 
+                     squeezeHorseThenAdd(curr, ahorse, ahorse.height, curr.depthNotYetUsed); 
                      markLastHorseOnPage(curr);
                   }
                   else
@@ -179,40 +188,62 @@ namespace ConsoleAppStichpdfNeat
          return squeezable;
       }
 
-      private static void squeezeHorse(PageDetail curr, Horse entry, double entryHeight, double depthNotYetUsed)
+      private static void squeezeHorseThenAdd(PageDetail curr, Horse entry, double entryHeight, double depthNotYetUsed)
       {
+         if (Constants.SKIP_ONGOING_SHRINK)
+            return; //no execution below
+
          double shrinkFactor = Constants.PageHeight / ( Constants.PageHeight - depthNotYetUsed + entryHeight);
-         // 1a. srink existing entries. header + firsthorse
-         if (curr.conjugate != null)
+         // 1a. srink existing entries. list of header+firsthorse
+         if (curr.seeHeaderAndFirstHorseList != null)
          {
-            curr.conjugate.header.newHeight = shrinkFactor * curr.conjugate.header.height;
-            curr.conjugate.firstHorse.newHeight = shrinkFactor * curr.conjugate.firstHorse.height;
+            curr.seeHeaderAndFirstHorseList.ForEach(hf => {
+               hf.header.newHeight = shrinkFactor * hf.header.height;
+               hf.firstHorse.newHeight = shrinkFactor * hf.firstHorse.height;
+            });
          }
          //1b. other horses
          curr.secondAndNextHorses.ForEach(h => h.newHeight = shrinkFactor * h.height);
-         //2. shrink current and add in
+         //2. shrink current|last horse, add page statistic. Then add the horse to page
          entry.newHeight = shrinkFactor * entry.height;
          curr.runningDepth = Constants.PageHeight;
          curr.depthNotYetUsed = 0;
          entry.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
          curr.entryCount = curr.entryCount + 1;
-         curr.secondAndNextHorses.Add(entry);
-         //calling method will set it as last entry on page
+         curr.secondAndNextHorses.Add(entry);        
+         
       }
-      private static void squeezeHeaderFirsthorse(PageDetail curr, HeaderAndFirstHorse hf, double entryHeight, double depthNotYetUsed)
+      private static void squeezeHeaderFirsthorseThenAdd(PageDetail curr, HeaderAndFirstHorse hf, double entryHeight, double depthNotYetUsed)
       {
+         if (Constants.SKIP_ONGOING_SHRINK)
+            return; //no execution below
+
          double shrinkFactor = Constants.PageHeight / (Constants.PageHeight - depthNotYetUsed + entryHeight);
-         //1. add and srink across         
-         curr.conjugate = hf;
-         curr.conjugate.header.newHeight = shrinkFactor * curr.conjugate.header.height;
-         curr.conjugate.firstHorse.newHeight = shrinkFactor *  curr.conjugate.firstHorse.height;
+
+
+         //1. srink existing secondAndNextHorses list
          curr.secondAndNextHorses.ForEach(h => h.newHeight = shrinkFactor * h.height);
-         curr.isthereAheader = true;         
+         //2. srink existing shrink header items
+         if(curr.seeHeaderAndFirstHorseList != null)
+         {
+            curr.seeHeaderAndFirstHorseList.ForEach( entry => {
+                                                                entry.firstHorse.newHeight = shrinkFactor * entry.firstHorse.height;
+                                                                entry.header.newHeight = shrinkFactor * entry.header.height;
+                                                      });
+         }
+         //3. shrink HeaderAndFirstHorse before putting
+         hf.firstHorse.newHeight = shrinkFactor * hf.firstHorse.height;
+         hf.header.newHeight = shrinkFactor * hf.firstHorse.height;         
+         //addd the hf to page
+         curr.addHeaderAndFirstHorse(hf);
+         //set the page statistic
          curr.runningDepth = Constants.PageHeight;
          curr.depthNotYetUsed = 0;
          hf.firstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
+         curr.isthereAheader = true;
          curr.entryCount = curr.entryCount + 2;
          //calling method responsible to set as last entry on page
+
 
       }
       //00000000000000---end---0000000000000000000

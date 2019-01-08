@@ -152,7 +152,7 @@ namespace ConsoleAppStichpdfNeat.Util
             }//track-for
 
          Horse lastHorse = pdfData.trackList.Last().raceList.Last<Race<Horse>>().secondAndOtherHorseList.Last<Horse>();
-         lastHorse.IsLastHorseOfTheCard = true;
+         lastHorse.IsLastHorseOfTheCard = true; 
             return pdfData;
         }
 
@@ -173,7 +173,7 @@ namespace ConsoleAppStichpdfNeat.Util
             for (int hh = 0; hh <= horseCount; hh++) {
                CardStruct.HorseOrHeader horseORheader = new CardStruct.HorseOrHeader();
                
-               horseORheader.Height = generateHorsOrHeaderDepth();
+               horseORheader.Height = generateHorsOrHeaderDepth();               
                horseORheader.racenum = r;
                if (hh == 0) //header
                {
@@ -190,12 +190,13 @@ namespace ConsoleAppStichpdfNeat.Util
                   horseORheader.IsFirstHorseOfRace = true;
                }else if(hh == horseCount) //last
                {
-                  horseORheader.IsLastHorseOfRace = true;
+                  horseORheader.IsLastHorseOfRace = true; 
                }
                //last horse of last race
                if( (r == raceCount) && (hh == horseCount))
                {
-                  horseORheader.IsLastHorseOfTheCard = true;
+                  //horseORheader.IsLastHorseOfTheCard = true;
+                  horseORheader.IsLastHorseOfTheCard = false; //to debug simulate actual program if does not mark IsLastHorseOfTheCard = true. part of simulation correctly done in prepInput()
                }
                oneRaceNode.allHorsesWithRaceHeader.Add(horseORheader);
             }

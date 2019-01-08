@@ -7,6 +7,7 @@ using ConsoleAppStichpdfNeat.NestedElements;
 using log4net;
 using ConsoleAppStichpdfNeat.Util;
 using System.Diagnostics;
+using ConsoleAppStichpdfNeat.Config;
 
 namespace ConsoleAppStichpdfNeat
 {
@@ -15,9 +16,13 @@ namespace ConsoleAppStichpdfNeat
       private static readonly ILog log = LogManager.GetLogger(typeof(PdfPageCalculation).Name);
       public List<CardStruct.Race> calculate(List<CardStruct.Race> races) //*** 1.
       {
+         System.Diagnostics.Debug.WriteLine("++++++++++++11111+++++++");
 
-         // CardStruct.debugPrintACard(raceList);
-         List<Race<Horse>> raceList = prepInput(races);
+         CardStruct.debugPrintACard(races);
+
+         System.Diagnostics.Debug.WriteLine("++++++++++++333333+++++++");
+
+         List <Race<Horse>> raceList = prepInput(races);
          log.Info(raceList);
          List<CardStruct.Race> raceout = processToFitOnPageAndReturn(raceList);
          
@@ -26,6 +31,7 @@ namespace ConsoleAppStichpdfNeat
 
          return raceout;
       }
+
 
       private List<Race<Horse>> prepInput(List<CardStruct.Race> praces) //***
       {
@@ -48,6 +54,8 @@ namespace ConsoleAppStichpdfNeat
 
             raceList.Add(cRace);
          }
+         Horse lastHorseOfCard = raceList.Last().secondAndOtherHorseList.Last();
+         lastHorseOfCard.IsLastHorseOfTheCard = true;                 
          return raceList;
       }
 
@@ -138,16 +146,21 @@ namespace ConsoleAppStichpdfNeat
          List<CardStruct.HorseOrHeader> ml = new List<CardStruct.HorseOrHeader>();
          foreach (PageDetail p in pglist)
          {
-            if (p.conjugate != null)
+            if (p.seeHeaderAndFirstHorseList != null)
             {
-               ml.Add(PdfPageCalculation.prepareHeaderStruct(p.conjugate.header));
-               ml.Add(PdfPageCalculation.prepareHorseStruct(p.conjugate.firstHorse));
+               foreach (HeaderAndFirstHorse hf in p.seeHeaderAndFirstHorseList)
+               {
+                  ml.Add(prepareHeaderStruct(hf.header));
+                  ml.Add(prepareHorseStruct(hf.firstHorse));
+               }
+
             }
             foreach (Horse h in p.secondAndNextHorses)
             {
-               ml.Add(PdfPageCalculation.prepareHorseStruct(h));
+               ml.Add(prepareHorseStruct(h));
 
             }
+
          }
 
          // ml.Sort(); //not needed here
