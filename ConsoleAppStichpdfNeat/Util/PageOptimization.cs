@@ -7,6 +7,7 @@ using ConsoleAppStichpdfNeat.Util;
 using ConsoleAppStichpdfNeat.Config;
 using ConsoleAppStichpdfNeat.NestedElements;
 using log4net;
+using System.Diagnostics;
 
 namespace ConsoleAppStichpdfNeat
 {
@@ -131,19 +132,11 @@ namespace ConsoleAppStichpdfNeat
             }
             else //hf does not fit at the bottom. So do 3 tasks: (1) mark last horse on page. (2) add a page. (3) fit hf for new race
             {
-               if (isSqueezable(curr.depthNotYetUsed, (hf.header.height + hf.firstHorse.height)))
-               {
-                  log.Info("isSqueezable TODO squeezeheaderFirsthorse");
-                  squeezeHeaderFirsthorseThenAdd(curr, hf, (hf.header.height + hf.firstHorse.height), curr.depthNotYetUsed); 
-                  markLastHorseOnPage(curr);
-               }
-               else
-               {
-                  markLastHorseOnPage(curr); //(1) //override here
-                  pages.Add(new PageDetail()); //(2)
-                  curr = pages.Last<PageDetail>();
-                  fitHeaderWithFirstHorse(curr, hf); //(3)
-               }
+               markLastHorseOnPage(curr); //(1) //override here
+               pages.Add(new PageDetail()); //(2)
+               curr = pages.Last<PageDetail>();
+               fitHeaderWithFirstHorse(curr, hf); //(3)
+               
             }
             //-------- fit 2nd and other horses ----------
             for (int h = 0; h < arace.secondAndOtherHorseList.Count; h++)
@@ -157,27 +150,111 @@ namespace ConsoleAppStichpdfNeat
                }
                else //horse height is larger than leftover space
                {
-                  if (isSqueezable(curr.depthNotYetUsed, ahorse.height))
-                  {
-                     squeezeHorseThenAdd(curr, ahorse, ahorse.height, curr.depthNotYetUsed); 
-                     markLastHorseOnPage(curr);
-                  }
-                  else
-                  {
-                     //1. mark last horse on page. 2. Next, add a new page. 3. Fit h at new pg
-                     markLastHorseOnPage(curr); //1
-                     pages.Add(new PageDetail()); //2
-                     curr = pages.Last<PageDetail>();
-                     fitAHorse(curr, ahorse); //3
-                  }
+                  //1. mark last horse on page. 2. Next, add a new page. 3. Fit h at new pg
+                  markLastHorseOnPage(curr); //1
+                  pages.Add(new PageDetail()); //2
+                  curr = pages.Last<PageDetail>();
+                  fitAHorse(curr, ahorse); //3
+
                }
 
             }
 
          }
+         //optimization done. Now hanlde last horse of the card. no processing if lastentry size > pagesize/3
+         if ((pages.Last().entryCount == 1) && pages.Last().secondAndNextHorses.Last().height < Constants.PageHeight / 3)
+         {
+            saveAPagebyshrinkLastHorseOfCard(pages);
+         }
 
          return pages;
       }
+
+      private static void saveAPagebyshrinkLastHorseOfCard(List<PageDetail> pages)
+      {
+         Horse lastHorseOftheCard = pages.Last().secondAndNextHorses.Last();
+         PageDetail pgBeforeLast = pages[pages.Count - 2];
+         if (isSqueezable(pgBeforeLast.depthNotYetUsed, lastHorseOftheCard.height))
+         {
+            Debug.WriteLine("saving last page by shrinking in saveAPagebyshrinkLastHorseOfCard");
+            pgBeforeLast.secondAndNextHorses.Last().positionOnPage.where = EntryLocationOnPage.MiddleEntryOnPage; 
+            squeezeHorseThenAdd(pgBeforeLast, lastHorseOftheCard, lastHorseOftheCard.height, pgBeforeLast.depthNotYetUsed);
+            markLastHorseOnPage(pgBeforeLast); //override firstEntryOnPage to lastEntryonPage                     
+            pages.RemoveAt(pages.Count - 1);
+
+         }
+
+      }
+
+      /* INCOMPLETE Unused but useful code  to add in while loop for squeezing from the beginning of lastrace 
+      private static void saveAPagebyshrinkLastHorseOfCard(List<PageDetail> pages)
+      {
+         Debug.WriteLine("7777 Inside saveAPagebyshrinkLastHorseOfCard()");
+         //step 1. find index of Page where last race begin
+         //what is this lamda |\ doing? Answer: First, finding the PageDetail (page) in which header of the last race exists. Then with this info finding the index of the pageDetail in 'pages' list
+         int lastRaceNo = pages.Last().secondAndNextHorses.Last().raceNumber;
+         int index = pages.FindIndex(p => {
+            HeaderAndFirstHorse headerAndFirstHorseOfLastRace = null;
+            if (p.seeHeaderAndFirstHorseList != null) //some page has no header
+            {
+               headerAndFirstHorseOfLastRace = p.seeHeaderAndFirstHorseList.Find(hf => hf.header.racenumber == lastRaceNo);
+            }
+            return headerAndFirstHorseOfLastRace != null;
+         });
+
+         //step 2. iterate and shrink from that spot
+         shrinkForLastHorse(index, pages);
+
+
+      }
+
+      private static void shrinkForLastHorse(int index, List<PageDetail> pages)
+      {
+         Debug.WriteLine("8888 Inside shrinkForLastHorse()");
+         int lastPgIndex = pages.Count - 1;
+         for (int i = index; i <= lastPgIndex; i++)
+         {
+
+            PageDetail curr = pages[i];
+            Horse lastHorseOnThisPg = curr.secondAndNextHorses.Last();
+            PageDetail pnext = null;
+            if( (i + 1) <= lastPgIndex)
+            {
+               pnext = pages[i + 1];
+            }
+            Horse firstHorseOnNextPg = pnext.secondAndNextHorses.First();
+            if(isSqueezable(curr.depthNotYetUsed, firstHorseOnNextPg.height))
+            {
+               //act 1: rm existing lasthorseOnPg marking
+               lastHorseOnThisPg.positionOnPage.where = EntryLocationOnPage.MiddleEntryOnPage; //important
+               //act 2: fit horse on this page and mark as last
+               squeezeHorseThenAdd(curr, firstHorseOnNextPg, firstHorseOnNextPg.height, curr.depthNotYetUsed);
+               markLastHorseOnPage(curr);
+               // act 3: correct/adjust next page
+               remove1stHorseOfNxtPgAdjustStatistics(pnext);
+
+            }
+            Debug.WriteLine(pages[i]);
+
+         }
+
+      }
+
+      private static void remove1stHorseOfNxtPgAdjustStatistics(PageDetail nxtPg)
+      {
+         double removedHeight = nxtPg.secondAndNextHorses.First().height;
+         nxtPg.secondAndNextHorses.RemoveAt(0);
+         nxtPg.entryCount = nxtPg.entryCount - 1; //removed a horse
+         nxtPg.runningDepth = nxtPg.runningDepth - removedHeight;
+         nxtPg.depthNotYetUsed = nxtPg.bottom - nxtPg.runningDepth;
+         //make now 1st horse as 1st horse
+         nxtPg.secondAndNextHorses.First().positionOnPage.where = EntryLocationOnPage.FirstEntryOnPage;
+         //adjust last horse statistics
+         nxtPg.secondAndNextHorses.Last().positionOnPage.leftspaceatEnd = nxtPg.depthNotYetUsed;
+      }
+
+
+      */
 
       private static bool isSqueezable(double depthNotYetUsed, double entryHeight)
       {
@@ -190,8 +267,6 @@ namespace ConsoleAppStichpdfNeat
 
       private static void squeezeHorseThenAdd(PageDetail curr, Horse entry, double entryHeight, double depthNotYetUsed)
       {
-         if (Constants.SKIP_ONGOING_SHRINK)
-            return; //no execution below
 
          double shrinkFactor = Constants.PageHeight / ( Constants.PageHeight - depthNotYetUsed + entryHeight);
          // 1a. srink existing entries. list of header+firsthorse
@@ -215,9 +290,6 @@ namespace ConsoleAppStichpdfNeat
       }
       private static void squeezeHeaderFirsthorseThenAdd(PageDetail curr, HeaderAndFirstHorse hf, double entryHeight, double depthNotYetUsed)
       {
-         if (Constants.SKIP_ONGOING_SHRINK)
-            return; //no execution below
-
          double shrinkFactor = Constants.PageHeight / (Constants.PageHeight - depthNotYetUsed + entryHeight);
 
 

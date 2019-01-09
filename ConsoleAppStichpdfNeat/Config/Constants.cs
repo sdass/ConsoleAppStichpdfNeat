@@ -8,7 +8,7 @@ namespace ConsoleAppStichpdfNeat.Config
 {
     class Constants
     {
-      public static double pageHeightIndots = 772.0; // 9.75 inch * 72 dots/inch
+      public static double pageHeightIndots = 772.0; // 80 dots/inch (approx  [702 9.75 inch * 72 dots/inch] 
 
       public static bool SKIP_ONGOING_SHRINK = true;
 
@@ -20,12 +20,12 @@ namespace ConsoleAppStichpdfNeat.Config
 
       public static double ShrinkMax
       {
-         get { return 0.25 * 72; } //inch * dots per inch
+         get { return 2.2 * 80; } //inch * dots per inch (approx) .75 - 1 inch
       }
 
       public static double ShrinkMin
       {
-         get { return 0.125 * 72; } //inch * dots per inch
+         get { return 0.125 * 80; } //inch * dots per inch
       }
 
       public static double LastPageMinimumFillout

@@ -49,8 +49,14 @@ namespace ConsoleAppStichpdfNeat.Util
 
       private string stringifyHeaderAndFirstHorseList()
       {
-         string init = "count=" + headerAndFirstHorseList.Count + ": ";
-         headerAndFirstHorseList.ForEach(hf => { init = init + hf.ToString(); });
+         int count = (headerAndFirstHorseList == null) ? 0 : headerAndFirstHorseList.Count;
+         string init = "count=" + count + ": ";
+
+         if (headerAndFirstHorseList != null)
+         {
+            headerAndFirstHorseList.ForEach(hf => { init = init + hf.ToString(); });
+         }
+
          return init;
       }
 
