@@ -53,7 +53,7 @@ namespace ConsoleAppStichpdfNeat
          System.Diagnostics.Debug.WriteLine("^^^^^^^^^^^^^^^^ENDED^^^^^^^^^^^^^^^^^^");
 
 
-            StitchedFinalPdf pdfData =  gen.generateAPdfStructure(1);// 1 track only
+           // StitchedFinalPdf pdfData =  gen.generateAPdfStructure(1);// 1 track only
             Console.WriteLine("==============!!!!!!!!!!!================!!!!!!!!!!!!=============");
             //Console.WriteLine("1StitchedFinalPdf=" + pdfData); // 1 track at a time
             Console.WriteLine("==============END================!!!!!!!!!!!!=============");

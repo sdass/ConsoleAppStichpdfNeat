@@ -20,13 +20,17 @@ namespace ConsoleAppStichpdfNeat
 
          CardStruct.debugPrintACard(races);
 
-         System.Diagnostics.Debug.WriteLine("++++++++++++333333+++++++");
+         System.Diagnostics.Debug.WriteLine("++++++++++++start at +++++++" + DateTime.Now + "\n");
+         Stopwatch sw = new Stopwatch(); sw.Start();
 
          List <Race<Horse>> raceList = prepInput(races);
          log.Info(raceList);
          List<CardStruct.Race> raceout = processToFitOnPageAndReturn(raceList);
+         sw.Stop();
+         Console.WriteLine(String.Format("elapsed time: {0} millisecond", sw.ElapsedMilliseconds ));
+
          
-         System.Diagnostics.Debug.WriteLine("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+         System.Diagnostics.Debug.WriteLine("+++++++++++++++++end at+++++++++++++++++++" + DateTime.Now  + "\n");
          // CardStruct.debugPrintACard(raceout);
 
          return raceout;

@@ -129,14 +129,14 @@ namespace ConsoleAppStichpdfNeat.Util
                     Console.Write("     race-" + r + ">>>>>> ");
                     Race<Horse> race = new Race<Horse>();
                     int horseCount = numberOfHorsePerRace();
-                    //process header and 1st horse
-                    int[] conjugate = generateHeaderAnd1stdHorseDepth();
+               //process header and 1st horse
+               int[] conjugate = generateHeaderAnd1stdHorseDepth();
                     HeaderAndFirstHorse hf = new HeaderAndFirstHorse(new Header(conjugate[0],"", "", r,"", true), new Horse(GeneatingFunction.HorseSequence,conjugate[1], "", "", r, "", true, false, false));
                     race = race.setRaceTop(hf);
 
                     //process 2nd horse onward
                     for (int h = 2; h <= horseCount; h++)
-                    {
+                    {                        
                         int depth = generateFrom2ndHorseDepth();
                         //Horse horse2on = new Horse(height);
                         //horse2.spCount = 0; auto initialize to 0
@@ -170,6 +170,7 @@ namespace ConsoleAppStichpdfNeat.Util
             oneRaceNode.allHorsesWithRaceHeader = new List<CardStruct.HorseOrHeader>();
             //for loop for horse-series
             int horseCount = numberOfHorsePerRace();
+            if (r == 3 || r == 4) horseCount = 4;//debug case for multiple header on one page override
             for (int hh = 0; hh <= horseCount; hh++) {
                CardStruct.HorseOrHeader horseORheader = new CardStruct.HorseOrHeader();
                
