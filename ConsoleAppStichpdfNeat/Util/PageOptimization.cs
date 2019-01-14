@@ -14,7 +14,7 @@ namespace ConsoleAppStichpdfNeat
     class PageOptimization
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(PageOptimization).Name);
-        public static void tryPageCalculation(Track aTrack)
+        public  void tryPageCalculation(Track aTrack)
         {
             log.Info("----->>>>>>>>>>>inside tryPageCalculation() . . . begin <<<<<<");
             log.Info("aTrack=" + aTrack); //correct
@@ -114,7 +114,7 @@ namespace ConsoleAppStichpdfNeat
 
 
       //00000000000000000000--- MOST REFINED begin---000000000000000000000000000
-      public static List<PageDetail> useOptimalSpace(List<Race<Horse>> listOfRace) //mimicked after tryPageCalculation() and enhanced
+      public List<PageDetail> useOptimalSpace(List<Race<Horse>> listOfRace) //mimicked after tryPageCalculation() and enhanced
       {
          string raceStr = "";
          listOfRace.ForEach(r => raceStr += r);
@@ -204,6 +204,8 @@ namespace ConsoleAppStichpdfNeat
       {
          foreach (PageDetail p in pages)
          {
+            if (p.doesVeryLargeHorseBegin)
+               continue;
             double residualSpace = p.getLastHorseOnPage().positionOnPage.leftspaceatEnd;
             if (residualSpace <= Constants.EvenSpaceMax)
             {
@@ -216,6 +218,11 @@ namespace ConsoleAppStichpdfNeat
                      if (hf.firstHorse.positionOnPage.where != EntryLocationOnPage.LastEntryOnPage)
                      {
                         hf.firstHorse.spCount = netEvenSpace;
+                     }else
+                     {
+                        //no need this else block but calculating explicitly if caller needs
+                        //last entry on the page
+                        hf.firstHorse.spCount = Convert.ToInt32(Math.Floor(residualSpace - ((p.entryCount -1) * netEvenSpace )));
                      }
                   });
                }
@@ -223,8 +230,15 @@ namespace ConsoleAppStichpdfNeat
                {
                   p.secondAndNextHorses.ForEach(h =>
                   {
-                     if (h.positionOnPage.where != EntryLocationOnPage.LastEntryOnPage) { 
+                     if (h.positionOnPage.where != EntryLocationOnPage.LastEntryOnPage)
+                     {
                         h.spCount = netEvenSpace;
+                     }
+                     else
+                     {
+                        //no need this else block but calculating explicitly if caller needs
+                        //last entry on the page
+                        h.spCount = Convert.ToInt32(Math.Floor(residualSpace - ((p.entryCount - 1) * netEvenSpace)));
                      }
                   });
                }
@@ -378,7 +392,7 @@ namespace ConsoleAppStichpdfNeat
       }
       //00000000000000---end---0000000000000000000
 
-      public static List<PageDetail> optimizeSpace(Track aTrack) //mimicked after tryPageCalculation() and enhanced
+      public List<PageDetail> optimizeSpace(Track aTrack) //mimicked after tryPageCalculation() and enhanced
         {
             log.Info("PRE:" + aTrack);
             Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@Begin . . . PageDetail . . . . .1 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");

@@ -13,6 +13,10 @@ namespace ConsoleAppStichpdfNeat.Util
       private List<HeaderAndFirstHorse> headerAndFirstHorseList; //if isthereAheader == false then it is null
         internal List<Horse> secondAndNextHorses { get; set; } //always exist
 
+      internal bool doesVeryLargeHorseBegin;
+      internal bool doesVeryLargeHorseEnd;
+
+      private int pgNumAtLastline;
       internal void addHeaderAndFirstHorse(HeaderAndFirstHorse hf)
       {
 

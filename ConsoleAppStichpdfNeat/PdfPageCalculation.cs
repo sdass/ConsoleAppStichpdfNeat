@@ -74,7 +74,7 @@ namespace ConsoleAppStichpdfNeat
 
       private List<CardStruct.Race> doProcess(List<Race<Horse>> races)
       {
-         List<Util.PageDetail> pages = PageOptimization.useOptimalSpace(races);
+         List<Util.PageDetail> pages = new PageOptimization().useOptimalSpace(races);
          Debug.Print("DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING DEBUG PRINTING ");
          //debugPrintPgDetails(pages);
          List<CardStruct.Race> horsesByrace = getEntriesGroupedInRace(pages);
