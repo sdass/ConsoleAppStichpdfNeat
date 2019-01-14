@@ -20,9 +20,13 @@ namespace ConsoleAppStichpdfNeat.Config
 
       public static double ShrinkMax
       {
-         get { return 2.2 * 80; } //inch * dots per inch (approx) .75 - 1 inch
+         get { return 0.9 * 80; } // tried with  2.2 * 80 //inch * dots per inch (approx) .75 - 1 inch
       }
 
+      public static double EvenSpaceMax
+      {
+         get { return 1.25 * 80; } //100 dots
+      }
       public static double ShrinkMin
       {
          get { return 0.125 * 80; } //inch * dots per inch

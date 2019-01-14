@@ -96,8 +96,23 @@ namespace ConsoleAppStichpdfNeat
          horse.Height = h.height;
          horse.NewHeight = h.newHeight;
          horse.SpaceBetween = h.spCount;
-         horse.PageBreak = (h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) ? true : false;
-         horse.ContinueOnNextPage = ((h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) && h.isLastHorseOfRace) ? false : true;
+         horse.PageBreak = (h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) ? true : false;         
+         horse.ContinueOnNextPage = ((h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) && !h.isLastHorseOfRace) ? true : false; // flag revised
+         
+         /*
+         // revisit ContinueOnNextPage flag. code on the above line is same as commented block
+
+         if(h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage && h.isLastHorseOfRace)
+         {
+            horse.ContinueOnNextPage = false;
+         }else if(h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage && !h.isLastHorseOfRace)
+         {
+            horse.ContinueOnNextPage = false;
+         }
+         */
+
+
+
          horse.IsLastHorseOfTheCard = h.IsLastHorseOfTheCard;
          //localize two fields below for simplification
          if (horse.IsLastHorseOfTheCard)

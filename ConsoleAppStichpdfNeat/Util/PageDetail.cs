@@ -47,6 +47,32 @@ namespace ConsoleAppStichpdfNeat.Util
 
         }
 
+      public Horse getLastHorseOnPage()
+      {
+         //critical pre-condition
+         Horse lastOfHeaderAndFirstHorseList = (headerAndFirstHorseList != null) ? headerAndFirstHorseList.Last().firstHorse : null;
+         Horse lastOf2ndHorseList = secondAndNextHorses.Last();
+         Horse lastHorseOnPg = null;
+         if (lastOfHeaderAndFirstHorseList != null)
+         {
+            //2 possibilites when header on page
+            if (lastOf2ndHorseList.raceNumber >= lastOfHeaderAndFirstHorseList.raceNumber)
+            {
+               lastHorseOnPg = lastOf2ndHorseList;
+            }
+            else
+            {
+               lastHorseOnPg = lastOfHeaderAndFirstHorseList;
+            }
+         }
+         else
+         {
+            //no header on page
+            lastHorseOnPg = lastOf2ndHorseList;
+         }
+         return lastHorseOnPg;
+      }
+
       private string stringifyHeaderAndFirstHorseList()
       {
          int count = (headerAndFirstHorseList == null) ? 0 : headerAndFirstHorseList.Count;

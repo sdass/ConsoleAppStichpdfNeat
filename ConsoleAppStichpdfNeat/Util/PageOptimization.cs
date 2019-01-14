@@ -82,6 +82,9 @@ namespace ConsoleAppStichpdfNeat
 
       private static void markLastHorseOnPage(PageDetail curr ) 
         {
+         curr.getLastHorseOnPage().positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
+
+         /*
          //Debug.Print("TO-DO" + EntryLocationOnPage.LastEntryOnPage);
          //critical pre-condition
          Horse lastOfHeaderAndFirstHorseList = (curr.seeHeaderAndFirstHorseList != null) ? curr.seeHeaderAndFirstHorseList.Last().firstHorse : null;
@@ -105,6 +108,8 @@ namespace ConsoleAppStichpdfNeat
             lastOf2ndHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
          }
 
+         */
+
       }
 
 
@@ -126,7 +131,11 @@ namespace ConsoleAppStichpdfNeat
             HeaderAndFirstHorse hf = arace.headerFirstHorse;
             PageDetail curr = pages.Last<PageDetail>();
 
-            if (curr.depthNotYetUsed > (hf.header.height + hf.firstHorse.height))
+            if( (hf.header.height + hf.firstHorse.height) > Constants.PageHeight)
+            {
+               Debug.Print("header and firsthorse is bigger then pageHeight" + hf);
+            }
+            else if (curr.depthNotYetUsed > (hf.header.height + hf.firstHorse.height))
             {
                fitHeaderWithFirstHorse(curr, hf);
             }
@@ -144,7 +153,11 @@ namespace ConsoleAppStichpdfNeat
                Horse ahorse = arace.secondAndOtherHorseList[h];
                curr = pages.Last<PageDetail>();
 
-               if (curr.depthNotYetUsed > ahorse.height)
+               if(ahorse.height > Constants.PageHeight)
+               {
+                  Debug.Print("horse [not 1st one] is bigger then pageHeight" + ahorse);
+               }
+               else if (curr.depthNotYetUsed > ahorse.height)
                {
                   fitAHorse(curr, ahorse);
                }
@@ -161,11 +174,12 @@ namespace ConsoleAppStichpdfNeat
             }
 
          }
-         //optimization done. Now hanlde last horse of the card. no processing if lastentry size > pagesize/3
          if ((pages.Last().entryCount == 1) && pages.Last().secondAndNextHorses.Last().height < Constants.PageHeight / 3)
          {
             saveAPagebyshrinkLastHorseOfCard(pages);
          }
+         //sparse must be after shrinkage
+         sparseEntrieseOnSomePage(pages);
 
          return pages;
       }
@@ -185,6 +199,50 @@ namespace ConsoleAppStichpdfNeat
          }
 
       }
+
+      public static void sparseEntrieseOnSomePage(List<PageDetail> pages)
+      {
+         foreach (PageDetail p in pages)
+         {
+            double residualSpace = p.getLastHorseOnPage().positionOnPage.leftspaceatEnd;
+            if (residualSpace <= Constants.EvenSpaceMax)
+            {
+               double evenSpace = getEvenSpaceAmount(residualSpace, p.entryCount -1); //gap appears between adjacent entries
+               int netEvenSpace = Convert.ToInt32( Math.Floor(evenSpace));
+               if (p.seeHeaderAndFirstHorseList != null)
+               {
+                  p.seeHeaderAndFirstHorseList.ForEach(hf => {
+                     hf.header.spCount = netEvenSpace;
+                     if (hf.firstHorse.positionOnPage.where != EntryLocationOnPage.LastEntryOnPage)
+                     {
+                        hf.firstHorse.spCount = netEvenSpace;
+                     }
+                  });
+               }
+               if (p.secondAndNextHorses != null)
+               {
+                  p.secondAndNextHorses.ForEach(h =>
+                  {
+                     if (h.positionOnPage.where != EntryLocationOnPage.LastEntryOnPage) { 
+                        h.spCount = netEvenSpace;
+                     }
+                  });
+               }
+               //line below may not be needed discuss
+               // p.getLastHorseOnPage().positionOnPage.leftspaceatEnd = 0; //override only last one's residual space
+
+            }
+
+
+         }
+
+      }
+
+      public static double getEvenSpaceAmount(double residual, int divisor)
+      {
+         return residual/ divisor;
+      }
+
 
       /* INCOMPLETE Unused but useful code  to add in while loop for squeezing from the beginning of lastrace 
       private static void saveAPagebyshrinkLastHorseOfCard(List<PageDetail> pages)
