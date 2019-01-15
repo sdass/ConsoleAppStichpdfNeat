@@ -13,6 +13,7 @@ namespace ConsoleAppStichpdfNeat
 {
     class PageOptimization
     {
+      private int pgNumAtLastline;
         private static readonly ILog log = LogManager.GetLogger(typeof(PageOptimization).Name);
         public  void tryPageCalculation(Track aTrack)
         {
@@ -63,6 +64,7 @@ namespace ConsoleAppStichpdfNeat
             curr.depthNotYetUsed = curr.bottom - curr.runningDepth;
             hf.firstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
             curr.entryCount = curr.entryCount + 2;
+            hf.firstHorse.pgno = curr.pgNum;
       }
 
         private static void fitAHorse(PageDetail curr, Horse ahorse)
@@ -76,6 +78,7 @@ namespace ConsoleAppStichpdfNeat
             curr.depthNotYetUsed = curr.bottom - curr.runningDepth;
             ahorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
             curr.entryCount = curr.entryCount + 1;
+         ahorse.pgno = curr.pgNum;
         }
 
 
@@ -121,7 +124,7 @@ namespace ConsoleAppStichpdfNeat
          log.Info("PRE:" + raceStr);
          log.Info("@@@@@@@@@@@@@@@@@@@@@@Begin . . . useOptimalSpace ...PageDetail . . . . .1 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
          List<PageDetail> pages = new List<PageDetail>();
-         PageDetail firstPg = new PageDetail();
+         PageDetail firstPg = new PageDetail(++pgNumAtLastline);
          pages.Add(firstPg);
 
          for (int r = 0; r < listOfRace.Count; r++)
@@ -142,7 +145,7 @@ namespace ConsoleAppStichpdfNeat
             else //hf does not fit at the bottom. So do 3 tasks: (1) mark last horse on page. (2) add a page. (3) fit hf for new race
             {
                markLastHorseOnPage(curr); //(1) //override here
-               pages.Add(new PageDetail()); //(2)
+               pages.Add(new PageDetail(++pgNumAtLastline)); //(2)
                curr = pages.Last<PageDetail>();
                fitHeaderWithFirstHorse(curr, hf); //(3)
                
@@ -165,7 +168,7 @@ namespace ConsoleAppStichpdfNeat
                {
                   //1. mark last horse on page. 2. Next, add a new page. 3. Fit h at new pg
                   markLastHorseOnPage(curr); //1
-                  pages.Add(new PageDetail()); //2
+                  pages.Add(new PageDetail(++pgNumAtLastline)); //2
                   curr = pages.Last<PageDetail>();
                   fitAHorse(curr, ahorse); //3
 
@@ -180,6 +183,8 @@ namespace ConsoleAppStichpdfNeat
          }
          //sparse must be after shrinkage
          sparseEntrieseOnSomePage(pages);
+
+         pages.ForEach(p => log.Info("debug<< " + p));
 
          return pages;
       }
@@ -357,6 +362,7 @@ namespace ConsoleAppStichpdfNeat
          curr.depthNotYetUsed = 0;
          entry.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
          curr.entryCount = curr.entryCount + 1;
+         entry.pgno = curr.pgNum;
          curr.secondAndNextHorses.Add(entry);        
          
       }

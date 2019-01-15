@@ -15,8 +15,8 @@ namespace ConsoleAppStichpdfNeat.Util
 
       internal bool doesVeryLargeHorseBegin;
       internal bool doesVeryLargeHorseEnd;
+      internal int pgNum;
 
-      private int pgNumAtLastline;
       internal void addHeaderAndFirstHorse(HeaderAndFirstHorse hf)
       {
 
@@ -42,12 +42,18 @@ namespace ConsoleAppStichpdfNeat.Util
 
       public PageDetail() : base()
         {
-            secondAndNextHorses = new List<Horse>();
+         secondAndNextHorses = new List<Horse>();
         }
-        public override string ToString()
+
+      public PageDetail(int pgNum) : base()
+      {
+         secondAndNextHorses = new List<Horse>();
+         this.pgNum = pgNum;
+      }
+      public override string ToString()
         {
 
-            return base.ToString() + "{PageDetail: " + "isthereAheader=" + isthereAheader + "[ headerAndFirstHorseList=" + stringifyHeaderAndFirstHorseList() + "] secondAndNextHorses=" + stringify2ndAndOtherHorses() + " }";
+            return base.ToString() + "{PageDetail: pgNum=" + pgNum + " isthereAheader =" + isthereAheader + "[ headerAndFirstHorseList=" + stringifyHeaderAndFirstHorseList() + "] secondAndNextHorses=" + stringify2ndAndOtherHorses() + " }";
 
         }
 

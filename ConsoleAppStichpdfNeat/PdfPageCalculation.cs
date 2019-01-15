@@ -99,17 +99,6 @@ namespace ConsoleAppStichpdfNeat
          horse.PageBreak = (h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) ? true : false;         
          horse.ContinueOnNextPage = ((h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage) && !h.isLastHorseOfRace) ? true : false; // flag revised
          
-         /*
-         // revisit ContinueOnNextPage flag. code on the above line is same as commented block
-
-         if(h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage && h.isLastHorseOfRace)
-         {
-            horse.ContinueOnNextPage = false;
-         }else if(h.positionOnPage.where == EntryLocationOnPage.LastEntryOnPage && !h.isLastHorseOfRace)
-         {
-            horse.ContinueOnNextPage = false;
-         }
-         */
 
 
 
