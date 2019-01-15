@@ -212,10 +212,33 @@ namespace ConsoleAppStichpdfNeat
             if (p.doesVeryLargeHorseBegin)
                continue;
             double residualSpace = p.getLastHorseOnPage().positionOnPage.leftspaceatEnd;
-            if (residualSpace <= Constants.EvenSpaceMax)
+            if (residualSpace <= Constants.MIN_SPACE_FOR_HEIGHT) // <= 30 dots //for lastentry on page set leftspaceatEnd=0 and do no calculation
+            {
+               p.getLastHorseOnPage().positionOnPage.leftspaceatEnd = 0;
+            }
+            else if (residualSpace > Constants.MIN_SPACE_FOR_HEIGHT && residualSpace <= Constants.MAX_SPACE_FOR_HEIGHT) // > 30 and <= 100 dots
+            {
+               //adjust to newHeights and lastentry on page set leftspaceatEnd=0
+               //change newHeight
+               if (p.secondAndNextHorses != null)
+               {
+                  p.secondAndNextHorses.ForEach(h => h.newHeight = h.height + (residualSpace / p.entryCount)); //do to all entries
+               }
+               if (p.seeHeaderAndFirstHorseList != null)
+               {
+                  //do to all entries
+                  p.seeHeaderAndFirstHorseList.ForEach(hf => {
+                     hf.header.newHeight = hf.header.height + (residualSpace / p.entryCount);
+
+                     hf.firstHorse.newHeight = hf.firstHorse.height + (residualSpace / p.entryCount);
+                  });
+               }
+               p.getLastHorseOnPage().positionOnPage.leftspaceatEnd = 0;
+            }
+            else if (residualSpace > Constants.MAX_SPACE_FOR_HEIGHT && residualSpace <= Constants.EvenSpaceMax) // > 100 and <= 150  dots
             {
                double evenSpace = getEvenSpaceAmount(residualSpace, p.entryCount -1); //gap appears between adjacent entries
-               int netEvenSpace = Convert.ToInt32( Math.Floor(evenSpace));
+               double netEvenSpace = evenSpace;
                if (p.seeHeaderAndFirstHorseList != null)
                {
                   p.seeHeaderAndFirstHorseList.ForEach(hf => {
@@ -223,12 +246,8 @@ namespace ConsoleAppStichpdfNeat
                      if (hf.firstHorse.positionOnPage.where != EntryLocationOnPage.LastEntryOnPage)
                      {
                         hf.firstHorse.spCount = netEvenSpace;
-                     }else
-                     {
-                        //no need this else block but calculating explicitly if caller needs
-                        //last entry on the page
-                        hf.firstHorse.spCount = Convert.ToInt32(Math.Floor(residualSpace - ((p.entryCount -1) * netEvenSpace )));
                      }
+                     //for last entry no space at end
                   });
                }
                if (p.secondAndNextHorses != null)
@@ -239,16 +258,10 @@ namespace ConsoleAppStichpdfNeat
                      {
                         h.spCount = netEvenSpace;
                      }
-                     else
-                     {
-                        //no need this else block but calculating explicitly if caller needs
-                        //last entry on the page
-                        h.spCount = Convert.ToInt32(Math.Floor(residualSpace - ((p.entryCount - 1) * netEvenSpace)));
-                     }
+                     //for last entry no space at end
                   });
                }
-               //line below may not be needed discuss
-               // p.getLastHorseOnPage().positionOnPage.leftspaceatEnd = 0; //override only last one's residual space
+               p.getLastHorseOnPage().positionOnPage.leftspaceatEnd = 0; //override only last one's residual space
 
             }
 

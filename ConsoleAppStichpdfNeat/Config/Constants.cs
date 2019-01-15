@@ -25,8 +25,12 @@ namespace ConsoleAppStichpdfNeat.Config
 
       public static double EvenSpaceMax
       {
-         get { return 1.25 * 80; } //100 dots
+         get { return 150; } //100 dots
       }
+
+      public static readonly double MIN_SPACE_FOR_HEIGHT = 30;
+      public static readonly double MAX_SPACE_FOR_HEIGHT = 100;
+
       public static double ShrinkMin
       {
          get { return 0.125 * 80; } //inch * dots per inch

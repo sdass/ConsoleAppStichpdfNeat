@@ -18,7 +18,7 @@ namespace ConsoleAppStichpdfNeat.NestedElements
         internal double height { get; set; }
         internal double bottomPosition { get; set; }
 
-        internal int spCount { get; set; }
+        internal double spCount { get; set; }
         internal double newHeight { get; set; }
 
         internal int raceNumber { get; set; }

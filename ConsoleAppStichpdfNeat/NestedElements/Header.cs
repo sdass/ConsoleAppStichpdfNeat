@@ -11,7 +11,7 @@ namespace ConsoleAppStichpdfNeat.NestedElements
       internal int id { get; set; }
         internal double height { get; set; }
         internal double newHeight { get; set; }
-        internal int spCount { get; set; }
+        internal double spCount { get; set; }
 
         internal string imgFileName { get; set; }
         internal string imgPath { get; set; }
