@@ -24,7 +24,7 @@ namespace ConsoleAppStichpdfNeat
          Stopwatch sw = new Stopwatch(); sw.Start();
 
          List <Race<Horse>> raceList = prepInput(races);
-         log.Info(raceList);
+         //log.Info( "Debug-5: " + raceList);
          List<CardStruct.Race> raceout = processToFitOnPageAndReturn(raceList);
          sw.Stop();
          Console.WriteLine(String.Format("elapsed time: {0} millisecond", sw.ElapsedMilliseconds ));
@@ -79,6 +79,7 @@ namespace ConsoleAppStichpdfNeat
          //debugPrintPgDetails(pages);
          List<CardStruct.Race> horsesByrace = getEntriesGroupedInRace(pages);
 
+         //debug horsesByrace.ForEach(r => r.allHorsesWithRaceHeader.ForEach(x => { if (x.SpaceBetween < 0) Console.WriteLine("space<>between=" + x.SpaceBetween); }));
          //TO-DO TO-DO
          return horsesByrace; //call process class before
       }

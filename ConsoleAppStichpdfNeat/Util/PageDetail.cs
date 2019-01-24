@@ -13,8 +13,9 @@ namespace ConsoleAppStichpdfNeat.Util
       private List<HeaderAndFirstHorse> headerAndFirstHorseList; //if isthereAheader == false then it is null
         internal List<Horse> secondAndNextHorses { get; set; } //always exist
 
-      internal bool doesVeryLargeHorseBegin;
-      internal bool doesVeryLargeHorseEnd;
+      internal bool doesVeryLargeHorseBegin; //true if very large horse begin on a page (page will have 0 residual space)
+      internal bool doesVeryLargeHorseEnd; //true if very large horse ends on a page (page will have residual space)
+      internal bool doesVeryLargeHorseMiddle; //true if very large horse occupies whole page in between begin-page and end-page
       internal int pgNum;
 
       internal void addHeaderAndFirstHorse(HeaderAndFirstHorse hf)
@@ -61,9 +62,19 @@ namespace ConsoleAppStichpdfNeat.Util
       {
          //critical pre-condition
          Horse lastOfHeaderAndFirstHorseList = (headerAndFirstHorseList != null) ? headerAndFirstHorseList.Last().firstHorse : null;
-         Horse lastOf2ndHorseList = secondAndNextHorses.Last();
+         Horse lastOf2ndHorseList = (secondAndNextHorses.Count > 0) ? secondAndNextHorses.Last() : null;
+         
          Horse lastHorseOnPg = null;
-         if (lastOfHeaderAndFirstHorseList != null)
+         
+         //deal large horse 1st for begin and middle pages
+         if(doesVeryLargeHorseBegin || doesVeryLargeHorseMiddle)
+         {
+            return lastHorseOnPg; // 2 use cases: very LARGE horse occupying 1st page residual but spill to next page OR full height middle pages (with the horse entry in the ending page)
+            //we are not marking lastHorse on the page because horse still continuing. Therefore no page break.
+         }
+
+         //Now deal regular or "large horse at the ending page" (total 4 use cases)
+         if ((lastOfHeaderAndFirstHorseList != null) && (lastOf2ndHorseList != null))
          {
             //2 possibilites when header on page
             if (lastOf2ndHorseList.raceNumber >= lastOfHeaderAndFirstHorseList.raceNumber)
@@ -75,12 +86,20 @@ namespace ConsoleAppStichpdfNeat.Util
                lastHorseOnPg = lastOfHeaderAndFirstHorseList;
             }
          }
-         else
+         else if (lastOfHeaderAndFirstHorseList != null) //implicit lastOf2ndHorseList is null
          {
-            //no header on page
+            lastHorseOnPg = lastOfHeaderAndFirstHorseList;
+         }
+         else if (lastOf2ndHorseList != null) //implicit lastOfHeaderAndFirstHorseList is null
+         {
             lastHorseOnPg = lastOf2ndHorseList;
          }
-         return lastHorseOnPg;
+         else //both are null
+         {
+            return lastHorseOnPg; // null
+         }
+
+            return lastHorseOnPg;
       }
 
       private string stringifyHeaderAndFirstHorseList()

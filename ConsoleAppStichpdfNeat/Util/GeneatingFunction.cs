@@ -170,11 +170,15 @@ namespace ConsoleAppStichpdfNeat.Util
             oneRaceNode.allHorsesWithRaceHeader = new List<CardStruct.HorseOrHeader>();
             //for loop for horse-series
             int horseCount = numberOfHorsePerRace();
-            if (r == 3 || r == 4) horseCount = 4;//debug case for multiple header on one page override
+           // if (r == 3 || r == 4) horseCount = 4;//debug case for multiple header on one page override
+            
+
             for (int hh = 0; hh <= horseCount; hh++) {
                CardStruct.HorseOrHeader horseORheader = new CardStruct.HorseOrHeader();
                
-               horseORheader.Height = generateHorsOrHeaderDepth();               
+               horseORheader.Height = generateHorsOrHeaderDepth();
+              // if (r == 5 && hh == 4) horseORheader.Height = 2000;//debug case for very large horse  override            
+               //if (r == 5 && hh == 1) horseORheader.Height = 2000;//debug case for very large horse  immediate to header            
                horseORheader.racenum = r;
                if (hh == 0) //header
                {

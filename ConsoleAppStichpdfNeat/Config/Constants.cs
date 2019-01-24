@@ -28,8 +28,9 @@ namespace ConsoleAppStichpdfNeat.Config
          get { return 150; } //100 dots
       }
 
-      public static readonly double MIN_SPACE_FOR_HEIGHT = 30;
+      public static readonly double MIN_SPACE_FOR_HEIGHT = 10;
       public static readonly double MAX_SPACE_FOR_HEIGHT = 100;
+      public static readonly double SHRINK_THRESHOLD_ONE_HORSE = 10;
 
       public static double ShrinkMin
       {

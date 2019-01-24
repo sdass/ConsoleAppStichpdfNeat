@@ -13,8 +13,10 @@ namespace ConsoleAppStichpdfNeat
 {
     class PageOptimization
     {
-      private int pgNumAtLastline;
+      private int pgNumAtLastline; // holds page number on which "LAST TEXT LINE" of a horse fitted. !important explanation for very large horse
         private static readonly ILog log = LogManager.GetLogger(typeof(PageOptimization).Name);
+
+      /* old implementation
         public  void tryPageCalculation(Track aTrack)
         {
             log.Info("----->>>>>>>>>>>inside tryPageCalculation() . . . begin <<<<<<");
@@ -41,6 +43,7 @@ namespace ConsoleAppStichpdfNeat
 
 
         }
+      */
 
         private static void debugPrintAllPages(List<PageDetail> pgs)
         {
@@ -82,36 +85,175 @@ namespace ConsoleAppStichpdfNeat
         }
 
 
-
-      private static void markLastHorseOnPage(PageDetail curr ) 
-        {
-         curr.getLastHorseOnPage().positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
-
-         /*
-         //Debug.Print("TO-DO" + EntryLocationOnPage.LastEntryOnPage);
-         //critical pre-condition
-         Horse lastOfHeaderAndFirstHorseList = (curr.seeHeaderAndFirstHorseList != null) ? curr.seeHeaderAndFirstHorseList.Last().firstHorse : null;
-         Horse lastOf2ndHorseList = curr.secondAndNextHorses.Last();
-         if (lastOfHeaderAndFirstHorseList != null)
+      private void fitA_Large_horse(PageDetail curr, Horse ahorse, List<PageDetail> pages) //horse bigger than full pageHeight
+      {
+         if (curr.depthNotYetUsed == Config.Constants.PageHeight)
          {
-            //2 possibilites when header on page
-            if (lastOf2ndHorseList.raceNumber >= lastOfHeaderAndFirstHorseList.raceNumber)
-            {
-               lastOf2ndHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
+            ahorse.positionOnPage.where = EntryLocationOnPage.FirstEntryOnPage;
+         }
+         //curr.secondAndNextHorses.Add(ahorse); // ???? here or at the ending page bring down // part of stats go in end page
+         
+         int endpageCount = ( ( (ahorse.height - curr.depthNotYetUsed) % Config.Constants.PageHeight) > 0) ? 1 : 0; //0 or 1
+         int middlePageCount = Convert.ToInt16(Math.Floor((ahorse.height - curr.depthNotYetUsed) / Config.Constants.PageHeight)); // on or more
+         int totalpageSpanned = 1 + middlePageCount + endpageCount; //begin page + middle pages + end page // for debugging
+         Debug.Print("totalpageSpanned: " + totalpageSpanned);
+
+         double contentGoesOnBeginPage = curr.depthNotYetUsed;
+         //beginning page
+         //no horse statistics
+         curr.runningDepth = Config.Constants.PageHeight;
+         curr.depthNotYetUsed = 0;
+         curr.doesVeryLargeHorseBegin = true;         
+
+         //full middle pages
+         for(int i = 1; i<= middlePageCount; i++)
+         {
+            PageDetail midPg = new PageDetail(++pgNumAtLastline);
+            pages.Add(midPg);
+            midPg.runningDepth = Config.Constants.PageHeight;
+            midPg.depthNotYetUsed = 0;
+            midPg.doesVeryLargeHorseMiddle = true;
+            if ( (endpageCount == 0) && (i == middlePageCount) )
+            { //horse fit at the endline of this page : use case 1
+               midPg.secondAndNextHorses.Add(ahorse);
+               ahorse.positionOnPage.leftspaceatEnd = 0;
+               midPg.doesVeryLargeHorseEnd = true;
+               midPg.entryCount = midPg.entryCount + 1;
+               ahorse.pgno = midPg.pgNum;
             }
-            else
+         }//for
+
+         //ending page (partly empty)
+         if (endpageCount == 1) // has an ending page: use case horse fit on a last space but has space at the end
+         {
+            PageDetail lastPg = new PageDetail(++pgNumAtLastline);
+            pages.Add(lastPg);
+            lastPg.secondAndNextHorses.Add(ahorse);
+            lastPg.runningDepth = lastPg.runningDepth + (ahorse.height - contentGoesOnBeginPage - (middlePageCount * Constants.PageHeight));
+            lastPg.depthNotYetUsed = lastPg.bottom - lastPg.runningDepth;
+            lastPg.doesVeryLargeHorseEnd = true;
+            ahorse.positionOnPage.leftspaceatEnd = lastPg.depthNotYetUsed;
+            lastPg.entryCount = lastPg.entryCount + 1;
+            ahorse.pgno = lastPg.pgNum;
+         }
+
+      }
+
+
+      private void fitA_header_with_Large_1sthorse(PageDetail curr, HeaderAndFirstHorse hf, List<PageDetail> pages)
+      {
+         if(curr.depthNotYetUsed == Constants.PageHeight)
+         {
+            hf.firstHorse.positionOnPage.where = EntryLocationOnPage.FirstEntryOnPage;
+         }
+         //decision 1: if space left does not fillup header + (1 x header height of horse content) give page break and start laying hf on next page
+         if(curr.depthNotYetUsed < 2 * hf.header.height)
+         {
+            //don't layout. give page break. start on a brand new page
+            markLastHorseOnPage(curr);
+            //create new page below and start laying out
+            int partiallyUsedBeginpage = 0; // partly filled initial page is none
+            //brand new pages
+            int middlePageCount = Convert.ToInt16(Math.Floor((hf.firstHorse.height + hf.header.height ) / Constants.PageHeight)); // 1 or more
+            int endPageCount = (((hf.header.height + hf.firstHorse.height) % Config.Constants.PageHeight) > 0) ? 1 : 0; // 0 or 1
+            int totalPageSpanned = partiallyUsedBeginpage + middlePageCount + endPageCount;
+            Debug.Print("Header-first-horse begins on new page totalPageSpanned: " + totalPageSpanned);
+            double contentGoesOnBeginPage = 0; // because started on a brand new page [notion: middle page filling up full-height]
+            for (int i = 1; i <= middlePageCount; i++)
             {
-               lastOfHeaderAndFirstHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
+               PageDetail midPg = new PageDetail(++pgNumAtLastline);
+               pages.Add(midPg);
+               midPg.runningDepth = Constants.PageHeight;
+               midPg.depthNotYetUsed = 0;
+               if (i == 1)
+               {
+                  midPg.doesVeryLargeHorseBegin = true;
+               }
+               else
+               {
+                  midPg.doesVeryLargeHorseMiddle = true;
+               }
+               if ((endPageCount == 0) && (i == middlePageCount))
+               { //horse fit at the endline of this page: use case 1
+                  midPg.addHeaderAndFirstHorse(hf);
+                  hf.firstHorse.positionOnPage.leftspaceatEnd = 0;
+                  midPg.doesVeryLargeHorseEnd = true;
+                  midPg.entryCount = midPg.entryCount + 2;
+                  hf.firstHorse.pgno = midPg.pgNum;
+
+               }
+            }//for
+            // if block when horse fills up part of a ending page
+            if (endPageCount == 1) // has an ending page. usecase: horse fit on a last page but has space at the end
+            {
+               PageDetail lastPg = new PageDetail(++pgNumAtLastline);
+               pages.Add(lastPg);
+               lastPg.addHeaderAndFirstHorse(hf);
+               lastPg.runningDepth = lastPg.runningDepth + (hf.header.height + hf.firstHorse.height - contentGoesOnBeginPage - (middlePageCount * Constants.PageHeight));
+               lastPg.depthNotYetUsed = lastPg.bottom - lastPg.runningDepth;
+               lastPg.doesVeryLargeHorseEnd = true;
+               hf.firstHorse.positionOnPage.leftspaceatEnd = lastPg.depthNotYetUsed;
+               hf.firstHorse.pgno = lastPg.pgNum;
+
             }
+
 
          }
          else
          {
-            //no header on page
-            lastOf2ndHorseList.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
-         }
+            //start laying on begin page because has enough space for header and good size of first horse content
+            // TO-DO
+            int endPageCount = ( ( (hf.header.height + hf.firstHorse.height - curr.depthNotYetUsed) % Config.Constants.PageHeight)  > 0) ? 1 : 0; // 0 or 1
+            int middlePageCount = Convert.ToInt16 (Math.Floor( (hf.firstHorse.height + hf.header.height - curr.depthNotYetUsed ) /Constants.PageHeight) ); // 1 or more
+            int partiallyUsedBeginpage = 1;
+            int totalPageSpanned = partiallyUsedBeginpage + middlePageCount + endPageCount;
+            Debug.Print("Header-first-horse begins on existing page totalPageSpanned: " + totalPageSpanned);
+            double contentGoesOnBeginPage = curr.depthNotYetUsed;
+            //on beginning page no header or horse statistics. Wait to give on to the last page
+            curr.runningDepth = Constants.PageHeight;
+            curr.depthNotYetUsed = 0;
+            curr.doesVeryLargeHorseBegin = true;
 
-         */
+            //full middle pages
+            for(int i = 1; i<= middlePageCount; i++)
+            {
+               PageDetail midPg = new PageDetail(++pgNumAtLastline);
+               pages.Add(midPg);
+               midPg.runningDepth = Constants.PageHeight;
+               midPg.depthNotYetUsed = 0;
+               midPg.doesVeryLargeHorseMiddle = true;
+               if( (endPageCount == 0) && (i == middlePageCount))
+               { //horse fit at the endline of this page: use case 1
+                  midPg.addHeaderAndFirstHorse(hf);
+                  hf.firstHorse.positionOnPage.leftspaceatEnd = 0;
+                  midPg.doesVeryLargeHorseEnd = true;
+                  midPg.entryCount = midPg.entryCount + 2;
+                  hf.firstHorse.pgno = midPg.pgNum;
+
+               }
+
+            }
+            // if block when horse occupies part of a ending page
+            if(endPageCount == 1) // has an ending page. usecase: horse fit on a last page but has space at the end
+            {
+               PageDetail lastPg = new PageDetail(++pgNumAtLastline);
+               pages.Add(lastPg);
+               lastPg.addHeaderAndFirstHorse(hf);
+               lastPg.runningDepth = lastPg.runningDepth + (hf.header.height + hf.firstHorse.height - contentGoesOnBeginPage - (middlePageCount * Constants.PageHeight));
+               lastPg.depthNotYetUsed = lastPg.bottom - lastPg.runningDepth;
+               lastPg.doesVeryLargeHorseEnd = true;
+               hf.firstHorse.positionOnPage.leftspaceatEnd = lastPg.depthNotYetUsed;
+               hf.firstHorse.pgno = lastPg.pgNum;
+
+            }
+
+         }
+      }
+
+      private static void markLastHorseOnPage(PageDetail curr ) 
+        {
+         if(curr.getLastHorseOnPage() != null)
+            curr.getLastHorseOnPage().positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
 
       }
 
@@ -136,11 +278,18 @@ namespace ConsoleAppStichpdfNeat
 
             if( (hf.header.height + hf.firstHorse.height) > Constants.PageHeight)
             {
-               Debug.Print("header and firsthorse is bigger then pageHeight" + hf);
+               Debug.Print("LARGE_ENTRY::header and firsthorse is bigger than pageHeight" + hf);
+               fitA_header_with_Large_1sthorse(curr, hf, pages);
             }
-            else if (curr.depthNotYetUsed > (hf.header.height + hf.firstHorse.height))
+            else if (curr.depthNotYetUsed >= (hf.header.height + hf.firstHorse.height))
             {
                fitHeaderWithFirstHorse(curr, hf);
+            }
+            else if ((curr.depthNotYetUsed + Constants.SHRINK_THRESHOLD_ONE_HORSE + 1) > (hf.header.height + hf.firstHorse.height))
+            {
+               //shrink and fit a head and firsthorse
+               shrinkFitAHeader1stHorseAtTheBottom(curr, hf);
+
             }
             else //hf does not fit at the bottom. So do 3 tasks: (1) mark last horse on page. (2) add a page. (3) fit hf for new race
             {
@@ -158,12 +307,21 @@ namespace ConsoleAppStichpdfNeat
 
                if(ahorse.height > Constants.PageHeight)
                {
-                  Debug.Print("horse [not 1st one] is bigger then pageHeight" + ahorse);
+                  Debug.Print("LARGE_ENTRY::horse [not 1st one] is bigger than pageHeight" + ahorse);
+                  fitA_Large_horse(curr, ahorse, pages);
                }
-               else if (curr.depthNotYetUsed > ahorse.height)
+               else if (curr.depthNotYetUsed >= ahorse.height)
                {
                   fitAHorse(curr, ahorse);
                }
+               
+               else if ((curr.depthNotYetUsed + Constants.SHRINK_THRESHOLD_ONE_HORSE + 1) > ahorse.height)
+               {
+                  //shrink and fit a horse
+                  shrinkFitAHorseAtTheBottom(curr, ahorse);
+
+               }
+               
                else //horse height is larger than leftover space
                {
                   //1. mark last horse on page. 2. Next, add a new page. 3. Fit h at new pg
@@ -177,6 +335,11 @@ namespace ConsoleAppStichpdfNeat
             }
 
          }
+
+         log.Info("see how it lays:");
+         pages.ForEach(p => log.Info("debug<< " + p));
+         log.Info("end debug:");
+
          if ((pages.Last().entryCount == 1) && pages.Last().secondAndNextHorses.Last().height < Constants.PageHeight / 3)
          {
             saveAPagebyshrinkLastHorseOfCard(pages);
@@ -184,8 +347,7 @@ namespace ConsoleAppStichpdfNeat
          //sparse must be after shrinkage
          sparseEntrieseOnSomePage(pages);
 
-         pages.ForEach(p => log.Info("debug<< " + p));
-
+         //pages.ForEach(p => log.Info("debug<< " + p));
          return pages;
       }
 
@@ -205,17 +367,52 @@ namespace ConsoleAppStichpdfNeat
 
       }
 
+      private void shrinkFitAHorseAtTheBottom(PageDetail curr, Horse ahorse) // if needed only <= 10 dots
+      {
+         if (curr.depthNotYetUsed == Constants.PageHeight)
+         {
+            ahorse.positionOnPage.where = EntryLocationOnPage.FirstEntryOnPage;
+         }
+         ahorse.newHeight = ahorse.height - (ahorse.height - curr.depthNotYetUsed);
+         curr.secondAndNextHorses.Add(ahorse);
+         curr.runningDepth = Constants.PageHeight;
+         curr.depthNotYetUsed = curr.bottom - curr.runningDepth;
+         ahorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
+         curr.entryCount = curr.entryCount + 1;
+         ahorse.pgno = curr.pgNum;
+         ahorse.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
+      }
+
+      private void shrinkFitAHeader1stHorseAtTheBottom(PageDetail curr, HeaderAndFirstHorse hf) // if needed only <= 10 dots
+      {
+         if (curr.depthNotYetUsed == Constants.PageHeight)
+         {
+            hf.firstHorse.positionOnPage.where = EntryLocationOnPage.FirstEntryOnPage;
+         }
+         double spaceToShrinkPerEntry = (hf.header.height + hf.firstHorse.height - curr.depthNotYetUsed) / 2;
+         hf.header.newHeight = hf.header.newHeight - spaceToShrinkPerEntry;
+         hf.firstHorse.newHeight = hf.firstHorse.newHeight - spaceToShrinkPerEntry;
+         curr.addHeaderAndFirstHorse(hf);
+         curr.runningDepth = Constants.PageHeight;
+         curr.depthNotYetUsed = curr.bottom - curr.runningDepth;
+         hf.firstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
+         curr.entryCount = curr.entryCount + 2;
+         hf.firstHorse.pgno = curr.pgNum;
+         hf.firstHorse.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;         
+      }
+
       public static void sparseEntrieseOnSomePage(List<PageDetail> pages)
       {
          foreach (PageDetail p in pages)
          {
-            if (p.doesVeryLargeHorseBegin)
+            if (p.doesVeryLargeHorseBegin || p.doesVeryLargeHorseMiddle)
                continue;
             double residualSpace = p.getLastHorseOnPage().positionOnPage.leftspaceatEnd;
-            if (residualSpace <= Constants.MIN_SPACE_FOR_HEIGHT) // <= 30 dots //for lastentry on page set leftspaceatEnd=0 and do no calculation
+            if (residualSpace <= Constants.MIN_SPACE_FOR_HEIGHT) // <= 10 dots //for lastentry on page set leftspaceatEnd=0 and do no calculation
             {
                p.getLastHorseOnPage().positionOnPage.leftspaceatEnd = 0;
             }
+            /*
             else if (residualSpace > Constants.MIN_SPACE_FOR_HEIGHT && residualSpace <= Constants.MAX_SPACE_FOR_HEIGHT) // > 30 and <= 100 dots
             {
                //adjust to newHeights and lastentry on page set leftspaceatEnd=0
@@ -235,9 +432,15 @@ namespace ConsoleAppStichpdfNeat
                }
                p.getLastHorseOnPage().positionOnPage.leftspaceatEnd = 0;
             }
-            else if (residualSpace > Constants.MAX_SPACE_FOR_HEIGHT && residualSpace <= Constants.EvenSpaceMax) // > 100 and <= 150  dots
+            */
+            else if (residualSpace > Constants.MIN_SPACE_FOR_HEIGHT && residualSpace <= Constants.EvenSpaceMax) // > 10 and <= 150  dots
             {
-               double evenSpace = getEvenSpaceAmount(residualSpace, p.entryCount -1); //gap appears between adjacent entries
+               // divide up the space evenly between etnties and for lastentry on page set leftspaceatEnd = 0
+               double evenSpace = 0;
+               if (p.entryCount > 1)
+               {
+                  evenSpace = getEvenSpaceAmount(residualSpace, p.entryCount - 1); //gap appears between adjacent entries
+               }
                double netEvenSpace = evenSpace;
                if (p.seeHeaderAndFirstHorseList != null)
                {
@@ -411,6 +614,7 @@ namespace ConsoleAppStichpdfNeat
       }
       //00000000000000---end---0000000000000000000
 
+         /* old implementation
       public List<PageDetail> optimizeSpace(Track aTrack) //mimicked after tryPageCalculation() and enhanced
         {
             log.Info("PRE:" + aTrack);
@@ -463,6 +667,7 @@ namespace ConsoleAppStichpdfNeat
 
             return pages;
         }
+      */
 
         private void peeking() //wroks
         {
