@@ -194,6 +194,7 @@ namespace ConsoleAppStichpdfNeat
                lastPg.doesVeryLargeHorseEnd = true;
                hf.firstHorse.positionOnPage.leftspaceatEnd = lastPg.depthNotYetUsed;
                hf.firstHorse.pgno = lastPg.pgNum;
+               lastPg.entryCount = lastPg.entryCount + 2;
 
             }
 
@@ -244,6 +245,7 @@ namespace ConsoleAppStichpdfNeat
                lastPg.doesVeryLargeHorseEnd = true;
                hf.firstHorse.positionOnPage.leftspaceatEnd = lastPg.depthNotYetUsed;
                hf.firstHorse.pgno = lastPg.pgNum;
+               lastPg.entryCount = lastPg.entryCount + 2;
 
             }
 
@@ -405,39 +407,24 @@ namespace ConsoleAppStichpdfNeat
       {
          foreach (PageDetail p in pages)
          {
-            if (p.doesVeryLargeHorseBegin || p.doesVeryLargeHorseMiddle)
+            if (p.doesVeryLargeHorseBegin || p.doesVeryLargeHorseMiddle) //no sparsing| putting space inbetween on large horse begin & middle pages
+               continue;
+            if (p.doesVeryLargeHorseEnd && p.entryCount == 2) //because very large horse (1) the last page actually has 1 entry (2) entryCount minimum is 2 on endingPage.
                continue;
             double residualSpace = p.getLastHorseOnPage().positionOnPage.leftspaceatEnd;
             if (residualSpace <= Constants.MIN_SPACE_FOR_HEIGHT) // <= 10 dots //for lastentry on page set leftspaceatEnd=0 and do no calculation
             {
                p.getLastHorseOnPage().positionOnPage.leftspaceatEnd = 0;
             }
-            /*
-            else if (residualSpace > Constants.MIN_SPACE_FOR_HEIGHT && residualSpace <= Constants.MAX_SPACE_FOR_HEIGHT) // > 30 and <= 100 dots
-            {
-               //adjust to newHeights and lastentry on page set leftspaceatEnd=0
-               //change newHeight
-               if (p.secondAndNextHorses != null)
-               {
-                  p.secondAndNextHorses.ForEach(h => h.newHeight = h.height + (residualSpace / p.entryCount)); //do to all entries
-               }
-               if (p.seeHeaderAndFirstHorseList != null)
-               {
-                  //do to all entries
-                  p.seeHeaderAndFirstHorseList.ForEach(hf => {
-                     hf.header.newHeight = hf.header.height + (residualSpace / p.entryCount);
-
-                     hf.firstHorse.newHeight = hf.firstHorse.height + (residualSpace / p.entryCount);
-                  });
-               }
-               p.getLastHorseOnPage().positionOnPage.leftspaceatEnd = 0;
-            }
-            */
             else if (residualSpace > Constants.MIN_SPACE_FOR_HEIGHT && residualSpace <= Constants.EvenSpaceMax) // > 10 and <= 150  dots
             {
                // divide up the space evenly between etnties and for lastentry on page set leftspaceatEnd = 0
                double evenSpace = 0;
-               if (p.entryCount > 1)
+               if (p.doesVeryLargeHorseEnd) //here entryCount >=3 because less than this value is handled at the beginning of foreach 
+               {
+                  evenSpace = getEvenSpaceAmount(residualSpace, p.entryCount - 2); //gap appears between adjacent entries (-2 because of large horse header is not on this page).
+               }
+               else if (p.entryCount > 1)
                {
                   evenSpace = getEvenSpaceAmount(residualSpace, p.entryCount - 1); //gap appears between adjacent entries
                }

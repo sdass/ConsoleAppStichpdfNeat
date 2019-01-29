@@ -178,7 +178,7 @@ namespace ConsoleAppStichpdfNeat.Util
                
                horseORheader.Height = generateHorsOrHeaderDepth();
               // if (r == 5 && hh == 4) horseORheader.Height = 2000;//debug case for very large horse  override            
-               //if (r == 5 && hh == 1) horseORheader.Height = 2000;//debug case for very large horse  immediate to header            
+              // if (r == 5 && hh == 1) horseORheader.Height = 2000;//debug case for very large horse  immediate to header            
                horseORheader.racenum = r;
                if (hh == 0) //header
                {

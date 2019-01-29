@@ -66,7 +66,7 @@ namespace ConsoleAppStichpdfNeat.Util
          
          Horse lastHorseOnPg = null;
          
-         //deal large horse 1st for begin and middle pages
+         //deal with large horse 1st for begin and middle pages
          if(doesVeryLargeHorseBegin || doesVeryLargeHorseMiddle)
          {
             return lastHorseOnPg; // 2 use cases: very LARGE horse occupying 1st page residual but spill to next page OR full height middle pages (with the horse entry in the ending page)
