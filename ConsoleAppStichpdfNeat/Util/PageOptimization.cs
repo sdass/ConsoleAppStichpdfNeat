@@ -290,7 +290,8 @@ namespace ConsoleAppStichpdfNeat
             else if ((curr.depthNotYetUsed + Constants.SHRINK_THRESHOLD_ONE_HORSE + 1) > (hf.header.height + hf.firstHorse.height))
             {
                //shrink and fit a head and firsthorse
-               shrinkFitAHeader1stHorseAtTheBottom(curr, hf);
+               //shrinkFitAHeader1stHorseAtTheBottom(curr, hf);
+               shrinkHorsesOnPagetoAddaHeader1stHorse(curr, hf, (hf.firstHorse.height + hf.header.height), curr.depthNotYetUsed);
 
             }
             else //hf does not fit at the bottom. So do 3 tasks: (1) mark last horse on page. (2) add a page. (3) fit hf for new race
@@ -320,7 +321,8 @@ namespace ConsoleAppStichpdfNeat
                else if ((curr.depthNotYetUsed + Constants.SHRINK_THRESHOLD_ONE_HORSE + 1) > ahorse.height)
                {
                   //shrink and fit a horse
-                  shrinkFitAHorseAtTheBottom(curr, ahorse);
+                  //shrinkFitAHorseAtTheBottom(curr, ahorse);
+                  shrinkHorsesOnPagetoAddaHorse(curr, ahorse, ahorse.height, curr.depthNotYetUsed);
 
                }
                
@@ -361,13 +363,69 @@ namespace ConsoleAppStichpdfNeat
          {
             Debug.WriteLine("saving last page by shrinking in saveAPagebyshrinkLastHorseOfCard");
             pgBeforeLast.secondAndNextHorses.Last().positionOnPage.where = EntryLocationOnPage.MiddleEntryOnPage; 
-            squeezeHorseThenAdd(pgBeforeLast, lastHorseOftheCard, lastHorseOftheCard.height, pgBeforeLast.depthNotYetUsed);
-            markLastHorseOnPage(pgBeforeLast); //override firstEntryOnPage to lastEntryonPage                     
+             shrinkHorsesOnPagetoAddaHorse(pgBeforeLast, lastHorseOftheCard, lastHorseOftheCard.height, pgBeforeLast.depthNotYetUsed);
+            //markLastHorseOnPage(pgBeforeLast); //override firstEntryOnPage to lastEntryonPage                     
             pages.RemoveAt(pages.Count - 1);
 
          }
 
       }
+
+      //will be used for any horse to bring to current page including last horse of the card
+      private static void shrinkHorsesOnPagetoAddaHorse(PageDetail curr, Horse entry, double entryHeight, double depthNotYetUsed)
+      {
+         double shrinkFactor = Constants.PageHeight / (Constants.PageHeight - depthNotYetUsed + entryHeight);
+         //1a. shrink existing entries. header+firsthorse list
+         if (curr.seeHeaderAndFirstHorseList != null)
+         {
+            curr.seeHeaderAndFirstHorseList.ForEach(hf => {
+               hf.header.newHeight = shrinkFactor * hf.header.height;
+               hf.firstHorse.newHeight = shrinkFactor * hf.firstHorse.height;
+            });
+         }
+         //1b. existing other horses
+         curr.secondAndNextHorses.ForEach(h => h.newHeight = shrinkFactor * h.height);
+         //2. shrink new|current entry. update page and horse level statistics including marking as last entry on page. add the horse
+         entry.newHeight = shrinkFactor * entry.height;
+         curr.runningDepth = Constants.PageHeight;
+         curr.depthNotYetUsed = 0;
+         entry.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
+         entry.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage; //set it as last entry on page
+         entry.pgno = curr.pgNum;
+         curr.entryCount = curr.entryCount + 1;
+         curr.secondAndNextHorses.Add(entry);
+
+      }
+
+      private static void shrinkHorsesOnPagetoAddaHeader1stHorse(PageDetail curr, HeaderAndFirstHorse hf, double entryHeight, double depthNotYetUsed)
+      {
+
+
+         double shrinkFactor = Constants.PageHeight / (Constants.PageHeight - depthNotYetUsed + entryHeight);
+         //1a. shrink existing entries. start with second list (only horses)
+         curr.secondAndNextHorses.ForEach(h => h.newHeight = shrinkFactor * h.height);
+         //1b. shrink existing entries. header+firsthorse list
+         if (curr.seeHeaderAndFirstHorseList != null)
+         {
+            curr.seeHeaderAndFirstHorseList.ForEach(ahf =>
+            {
+               ahf.header.newHeight = shrinkFactor * ahf.header.height;
+               ahf.firstHorse.newHeight = shrinkFactor * ahf.firstHorse.height;
+            });
+         }
+         //2. shrink new entry (hf). set page level and hf level statistics, set as last entry. Add to page (on header+firsthorse list)
+         hf.header.newHeight = shrinkFactor * hf.header.height;
+         hf.firstHorse.newHeight = shrinkFactor * hf.firstHorse.height;            
+         curr.isthereAheader = true;
+         curr.runningDepth = Constants.PageHeight;
+         curr.depthNotYetUsed = 0;
+         hf.firstHorse.positionOnPage.leftspaceatEnd = curr.depthNotYetUsed;
+         hf.firstHorse.positionOnPage.where = EntryLocationOnPage.LastEntryOnPage;
+         hf.firstHorse.pgno = curr.pgNum;
+         curr.addHeaderAndFirstHorse(hf);
+         curr.entryCount = curr.entryCount + 2;
+      }
+
 
       private void shrinkFitAHorseAtTheBottom(PageDetail curr, Horse ahorse) // if needed only <= 10 dots
       {
@@ -545,6 +603,7 @@ namespace ConsoleAppStichpdfNeat
          return squeezable;
       }
 
+      /*
       private static void squeezeHorseThenAdd(PageDetail curr, Horse entry, double entryHeight, double depthNotYetUsed)
       {
 
@@ -569,6 +628,7 @@ namespace ConsoleAppStichpdfNeat
          curr.secondAndNextHorses.Add(entry);        
          
       }
+      */
       private static void squeezeHeaderFirsthorseThenAdd(PageDetail curr, HeaderAndFirstHorse hf, double entryHeight, double depthNotYetUsed)
       {
          double shrinkFactor = Constants.PageHeight / (Constants.PageHeight - depthNotYetUsed + entryHeight);
